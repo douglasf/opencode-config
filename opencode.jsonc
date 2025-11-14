@@ -37,6 +37,7 @@
     },
     "github-helper": {
       "description": "Helper for GitHub operations - use when working with GitHub issues, PRs, or repositories",
+      "subagent": true,
       "tools": {
         "github*": true
       }
