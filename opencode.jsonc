@@ -1,0 +1,33 @@
+{
+  "mcp": {
+    "github": {
+      "type": "local",
+      "command": ["npx", "-y", "@modelcontextprotocol/server-github"],
+      "environment": {
+        "GITHUB_PERSONAL_ACCESS_TOKEN": "${GITHUB_PERSONAL_ACCESS_TOKEN}"
+      }
+    }
+  },
+  "$schema": "https://opencode.ai/config.json",
+  "instructions": ["./prompts/git-restrictions.md"],
+  "agent": {
+    "plan": {
+      "tools": {
+        "read": true,
+        "glob": true,
+        "grep": true,
+        "list": true
+      }
+    },
+    "build": {
+      "permission": {
+        "bash": {
+          "git commit*": "ask",
+          "git push*": "ask",
+          "gh pr create*": "ask",
+          "gh pr merge*": "ask"
+        }
+      }
+    }
+  }
+}
