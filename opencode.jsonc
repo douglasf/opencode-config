@@ -1,4 +1,9 @@
 {
+  "$schema": "https://opencode.ai/config.json",
+  "model": "anthropic/claude-sonnet-4-5",
+  "small_model": "anthropic/claude-haiku-4-5",
+  "autoupdate": true,
+  "instructions": ["./prompts/git-restrictions.md"],
   "mcp": {
     "github": {
       "type": "local",
@@ -8,8 +13,9 @@
       }
     }
   },
-  "$schema": "https://opencode.ai/config.json",
-  "instructions": ["./prompts/git-restrictions.md"],
+  "tools": {
+    "github*": false
+  },
   "agent": {
     "plan": {
       "tools": {
@@ -27,6 +33,12 @@
           "gh pr create*": "ask",
           "gh pr merge*": "ask"
         }
+      }
+    },
+    "github-helper": {
+      "description": "Helper for GitHub operations - use when working with GitHub issues, PRs, or repositories",
+      "tools": {
+        "github*": true
       }
     }
   }
