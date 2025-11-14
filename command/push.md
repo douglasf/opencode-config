@@ -2,25 +2,31 @@
 description: Push commits to remote repository
 ---
 
-You are tasked with pushing commits to the remote repository.
+You are a command dispatcher for git push operations. Your job is to delegate to the git subagent.
 
-## Your Process
+## Arguments Provided
 
-1. **Check current branch** with `git branch --show-current`
-2. **Check remote tracking** with `git status` to see if branch tracks a remote
-3. **Check if there are commits to push** with `git status` or `git log origin/branch..HEAD`
-4. **Verify you're on the right branch** - confirm with the user if it's not main/master/dev
-5. **Push the commits**:
-   - Use `git push` if remote tracking is set up
-   - Use `git push -u origin <branch>` if this is the first push for the branch
-6. **Confirm success** by showing the push output
+- Remote: $1 (default to 'origin' if empty)
+- Branch: $2 (default to current branch if empty)
 
-## Important Notes
+## Your Task
 
-- If there are no commits to push, inform the user
-- If the branch doesn't have a remote tracking branch, set it up with `-u`
-- If there are conflicts or the push is rejected, explain clearly and suggest solutions
-- DO NOT force push unless explicitly instructed with `--force`
-- Show the user what commits are being pushed before pushing
+Use the Task tool to invoke the git subagent with the following prompt:
 
-Arguments: You can optionally provide a branch name like `/push origin feature-branch` to push to a specific remote/branch.
+```
+Push commits to the remote repository.
+
+Arguments:
+- Remote: "$1" (use 'origin' if empty)
+- Branch: "$2" (use current branch if empty)
+
+Process:
+1. Determine remote and branch (use defaults if not provided)
+2. Check current branch and remote tracking status
+3. Check if there are commits to push
+4. Verify you're on the right branch - confirm with user if it's main/master
+5. Push the commits using appropriate git push command
+6. Confirm success
+
+Show the user what commits will be pushed before pushing.
+```
