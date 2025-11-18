@@ -16,6 +16,12 @@
   "tools": {
     "github*": false
   },
+  "lsp": {
+    "kotlin": {
+      "command": ["kotlin-language-server"],
+      "extensions": [".kt", ".kts"]
+    }
+  },
   "agent": {
     "plan": {
       "tools": {
