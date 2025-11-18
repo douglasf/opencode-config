@@ -18,7 +18,7 @@
   },
   "lsp": {
     "kotlin": {
-      "command": ["kotlin-language-server"],
+      "command": ["kotlin-lsp", "--stdio"],
       "extensions": [".kt", ".kts"]
     }
   },
