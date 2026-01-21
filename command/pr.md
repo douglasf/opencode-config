@@ -18,11 +18,6 @@ Create a pull request for the user's changes.
 - If $1 doesn't match Jira pattern, use it as the full PR title
 - If both empty, generate title automatically
 
-When Jira ID present, include in description:
-```
-Jira: https://jira.company.com/browse/JIRA-ID
-```
-
 ## Process
 
 1. Verify current branch and ensure commits are pushed
