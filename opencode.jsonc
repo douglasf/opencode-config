@@ -1,9 +1,12 @@
 {
   "$schema": "https://opencode.ai/config.json",
-  "model": "anthropic/claude-sonnet-4-5",
-  "small_model": "anthropic/claude-haiku-4-5",
+  "plugin": ["oh-my-opencode@latest"],
+  "model": "github-copilot/claude-opus-4.5",
+  "small_model": "github-copilot/claude-haiku-4-5",
   "autoupdate": true,
-  "instructions": ["./prompts/git-restrictions.md"],
+  "instructions": [
+    "./prompts/git-restrictions.md"
+  ],
   "tools": {
     "github*": false
   },
@@ -29,6 +32,10 @@
           "git push*": "ask",
           "gh pr create*": "ask",
           "gh pr merge*": "ask"
+        },
+        "external_directory": {
+          "/Users/douglasnils.frisk/.opencode/memory": "allow",
+          "/Users/douglasnils.frisk/.opencode/memory/*": "allow"
         }
       }
     },
