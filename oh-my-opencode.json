@@ -1,0 +1,86 @@
+{
+  "$schema": "https://raw.githubusercontent.com/code-yeongyu/oh-my-opencode/master/assets/oh-my-opencode.schema.json",
+  "agents": {
+    "sisyphus": {
+      "model": "github-copilot/claude-opus-4.5",
+      "variant": "max",
+      "prompt_append": "\n\n# Repository Memory System\n\nYou have access to a persistent memory system that stores project-level knowledge across sessions.\n\n## Memory Location\n\nMemory files are stored at `~/.opencode/memory/<repo-path>/MEMORY.md` where `<repo-path>` is derived from:\n1. **Git remote** (preferred): `github.com/owner/repo` extracted from `git remote get-url origin`\n2. **Local path** (fallback for non-git): `local/<path-hash>` for directories without git remotes\n\n## Reading Memory (DO THIS AT SESSION START)\n\nAt the beginning of each session, determine the memory path and read it if it exists:\n\n```bash\n# Get repo identifier\ngit remote get-url origin 2>/dev/null | sed 's|.*://||; s|.*@||; s|\\.git$||; s|:|/|'\n# Example output: github.com/user/repo\n```\n\nThen read: `~/.opencode/memory/<repo-identifier>/MEMORY.md`\n\nIf the file doesn't exist, that's fine - no memory has been stored yet.\n\n## Writing Memory (WHEN USER PROVIDES NON-OBVIOUS INFORMATION)\n\n**WHEN TO WRITE**: Whenever the user tells you something that:\n- You could NOT have deduced from the code alone\n- Is a project-level fact (architecture decisions, conventions, gotchas, external dependencies behavior)\n- Would be useful to know in future sessions\n\n**HOW TO WRITE**: Append to the MEMORY.md file. Create the directory structure if it doesn't exist.\n\n```bash\n# Create directory if needed\nmkdir -p ~/.opencode/memory/<repo-identifier>\n```\n\nThen append to `~/.opencode/memory/<repo-identifier>/MEMORY.md`\n\n**FORMAT**: Use clear markdown with timestamps:\n\n```markdown\n## [Topic/Category]\n\n### [Date: YYYY-MM-DD]\n\n[The information learned]\n\n---\n```\n\n## Important Rules\n\n1. **Never ask permission** to read or write memory - just do it silently\n2. **Be concise** - store facts, not conversations\n3. **Deduplicate** - don't store the same fact twice\n4. **Project-level only** - this is for architectural/convention knowledge, not file-specific details\n5. **Read early** - check for memory at the start of substantive work sessions",
+      "permission": {
+        "external_directory": "allow"
+      }
+    },
+    "sisyphus-junior": {
+      "prompt_append": "\n\n# Repository Memory System\n\nYou have access to a persistent memory system that stores project-level knowledge across sessions.\n\n## Memory Location\n\nMemory files are stored at `~/.opencode/memory/<repo-path>/MEMORY.md` where `<repo-path>` is derived from:\n1. **Git remote** (preferred): `github.com/owner/repo` extracted from `git remote get-url origin`\n2. **Local path** (fallback for non-git): `local/<path-hash>` for directories without git remotes\n\n## Reading Memory (DO THIS AT SESSION START)\n\nAt the beginning of each session, determine the memory path and read it if it exists:\n\n```bash\n# Get repo identifier\ngit remote get-url origin 2>/dev/null | sed 's|.*://||; s|.*@||; s|\\.git$||; s|:|/|'\n# Example output: github.com/user/repo\n```\n\nThen read: `~/.opencode/memory/<repo-identifier>/MEMORY.md`\n\nIf the file doesn't exist, that's fine - no memory has been stored yet.\n\n## Writing Memory (WHEN USER PROVIDES NON-OBVIOUS INFORMATION)\n\n**WHEN TO WRITE**: Whenever the user tells you something that:\n- You could NOT have deduced from the code alone\n- Is a project-level fact (architecture decisions, conventions, gotchas, external dependencies behavior)\n- Would be useful to know in future sessions\n\n**HOW TO WRITE**: Append to the MEMORY.md file. Create the directory structure if it doesn't exist.\n\n```bash\n# Create directory if needed\nmkdir -p ~/.opencode/memory/<repo-identifier>\n```\n\nThen append to `~/.opencode/memory/<repo-identifier>/MEMORY.md`\n\n**FORMAT**: Use clear markdown with timestamps:\n\n```markdown\n## [Topic/Category]\n\n### [Date: YYYY-MM-DD]\n\n[The information learned]\n\n---\n```\n\n## Important Rules\n\n1. **Never ask permission** to read or write memory - just do it silently\n2. **Be concise** - store facts, not conversations\n3. **Deduplicate** - don't store the same fact twice\n4. **Project-level only** - this is for architectural/convention knowledge, not file-specific details\n5. **Read early** - check for memory at the start of substantive work sessions",
+      "permission": {
+        "external_directory": "allow"
+      }
+    },
+    "build": {
+      "prompt_append": "\n\n# Repository Memory System\n\nYou have access to a persistent memory system that stores project-level knowledge across sessions.\n\n## Memory Location\n\nMemory files are stored at `~/.opencode/memory/<repo-path>/MEMORY.md` where `<repo-path>` is derived from:\n1. **Git remote** (preferred): `github.com/owner/repo` extracted from `git remote get-url origin`\n2. **Local path** (fallback for non-git): `local/<path-hash>` for directories without git remotes\n\n## Reading Memory (DO THIS AT SESSION START)\n\nAt the beginning of each session, determine the memory path and read it if it exists:\n\n```bash\n# Get repo identifier\ngit remote get-url origin 2>/dev/null | sed 's|.*://||; s|.*@||; s|\\.git$||; s|:|/|'\n# Example output: github.com/user/repo\n```\n\nThen read: `~/.opencode/memory/<repo-identifier>/MEMORY.md`\n\nIf the file doesn't exist, that's fine - no memory has been stored yet.\n\n## Writing Memory (WHEN USER PROVIDES NON-OBVIOUS INFORMATION)\n\n**WHEN TO WRITE**: Whenever the user tells you something that:\n- You could NOT have deduced from the code alone\n- Is a project-level fact (architecture decisions, conventions, gotchas, external dependencies behavior)\n- Would be useful to know in future sessions\n\n**HOW TO WRITE**: Append to the MEMORY.md file. Create the directory structure if it doesn't exist.\n\n```bash\n# Create directory if needed\nmkdir -p ~/.opencode/memory/<repo-identifier>\n```\n\nThen append to `~/.opencode/memory/<repo-identifier>/MEMORY.md`\n\n**FORMAT**: Use clear markdown with timestamps:\n\n```markdown\n## [Topic/Category]\n\n### [Date: YYYY-MM-DD]\n\n[The information learned]\n\n---\n```\n\n## Important Rules\n\n1. **Never ask permission** to read or write memory - just do it silently\n2. **Be concise** - store facts, not conversations\n3. **Deduplicate** - don't store the same fact twice\n4. **Project-level only** - this is for architectural/convention knowledge, not file-specific details\n5. **Read early** - check for memory at the start of substantive work sessions",
+      "permission": {
+        "external_directory": "allow"
+      }
+    },
+    "hephaestus": {
+      "model": "github-copilot/gpt-5.2-codex",
+      "variant": "medium"
+    },
+    "oracle": {
+      "model": "github-copilot/gpt-5.2",
+      "variant": "high"
+    },
+    "librarian": {
+      "model": "github-copilot/claude-sonnet-4.5"
+    },
+    "explore": {
+      "model": "github-copilot/claude-haiku-4.5"
+    },
+    "multimodal-looker": {
+      "model": "github-copilot/gemini-3-pro-preview"
+    },
+    "prometheus": {
+      "model": "github-copilot/claude-opus-4.5",
+      "variant": "max"
+    },
+    "metis": {
+      "model": "github-copilot/claude-opus-4.5",
+      "variant": "max"
+    },
+    "momus": {
+      "model": "github-copilot/gpt-5.2",
+      "variant": "medium"
+    },
+    "atlas": {
+      "model": "github-copilot/claude-sonnet-4.5"
+    }
+  },
+  "categories": {
+    "visual-engineering": {
+      "model": "github-copilot/gemini-3-pro-preview"
+    },
+    "ultrabrain": {
+      "model": "github-copilot/gpt-5.2-codex",
+      "variant": "xhigh"
+    },
+    "deep": {
+      "model": "github-copilot/gpt-5.2-codex",
+      "variant": "medium"
+    },
+    "artistry": {
+      "model": "github-copilot/gemini-3-pro-preview",
+      "variant": "max"
+    },
+    "quick": {
+      "model": "github-copilot/claude-haiku-4.5"
+    },
+    "unspecified-low": {
+      "model": "github-copilot/claude-sonnet-4.5"
+    },
+    "unspecified-high": {
+      "model": "github-copilot/claude-opus-4.5"
+    },
+    "writing": {
+      "model": "github-copilot/gemini-3-flash-preview"
+    }
+  }
+}
