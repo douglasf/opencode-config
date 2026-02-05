@@ -3,7 +3,7 @@ description: Create git commit(s) with intelligent change grouping
 agent: git
 ---
 
-Create git commit(s) for the user's recent changes, using intelligent file-level and chunk-level grouping to produce clean, atomic commits.
+Create git commit(s) for the user's recent changes, using intelligent file-level and chunk-level grouping to produce clean, atomic commits. Commits are executed immediately with smart grouping — no confirmation step. The user can rebase afterward if they want to adjust.
 
 ## Amend Mode
 
@@ -15,7 +15,7 @@ If the first argument is "amend", amend the previous commit instead of creating 
 
 $ARGUMENTS
 
-If a commit message is provided above (not empty and not "amend"), use it exactly as provided and skip the grouping workflow -- stage all changes and create a single commit with that message.
+If a commit message is provided above (not empty and not "amend"), use it exactly as provided and skip the grouping workflow — stage all changes and create a single commit with that message.
 
 ## Amend Process
 
@@ -30,7 +30,7 @@ If a commit message is provided above (not empty and not "amend"), use it exactl
 
 ## Smart Commit Workflow (no message provided, not amend)
 
-When no commit message is given, analyze changes deeply and group them into atomic, meaningful commits.
+When no commit message is given, analyze changes deeply, group them into atomic meaningful commits, execute them immediately, and report the results.
 
 ### Phase 1: Gather All Changes
 
@@ -80,44 +80,13 @@ Group changes into commit candidates based on semantic intent. Each group should
 - A test file should be in the SAME group as the source code it tests, not a separate "test" group
 - If a single file contains hunks with different intents (e.g., a bug fix AND a formatting cleanup), split them into separate groups at the hunk level
 - If ALL changes are clearly one logical unit, keep them as a single group (don't over-split)
-- Prefer fewer, cohesive groups over many tiny ones -- each group should be a meaningful unit of work
+- Prefer fewer, cohesive groups over many tiny ones — each group should be a meaningful unit of work
 - Untracked files that are clearly related (e.g., a new feature file + its test) go in the same group
 - Keep related dependency/config changes with the code that needs them
 
-### Phase 4: Present Groups for User Confirmation
+### Phase 4: Execute Commits
 
-Present the proposed commit plan to the user in a clear format:
-
-```
-I've analyzed your changes and propose the following commit(s):
-
-**Commit 1/N**: `feat(auth): add JWT token refresh logic`
-  - src/auth/refresh.ts (new file)
-  - src/auth/refresh.test.ts (new file)
-  - src/auth/types.ts (hunks: added RefreshToken interface)
-
-**Commit 2/N**: `fix(api): handle null response in user endpoint`
-  - src/api/users.ts (hunks: null check in getUser)
-  - src/api/users.test.ts (hunks: added null response test)
-
-**Commit 3/N**: `chore(deps): update lodash to 4.17.21`
-  - package.json (hunks: lodash version)
-  - package-lock.json (modified)
-
-Shall I proceed with this plan? You can also:
-- Ask me to merge groups (e.g., "merge 1 and 2")
-- Ask me to split a group further
-- Ask me to move files/hunks between groups
-- Ask me to change a commit message
-```
-
-**Wait for user confirmation before executing any commits.** If the user wants adjustments, update the plan and re-present it.
-
-If there is only one logical group, you can simplify: just show the single proposed commit message and file list, and ask for a quick confirmation.
-
-### Phase 5: Execute Commits
-
-Execute each group as a separate commit, **in dependency order** (base changes before dependent changes).
+Execute each group as a separate commit **immediately**, in dependency order (base changes before dependent changes). Do NOT ask for confirmation — commit right away.
 
 #### For file-level groups (entire files belong to one group):
 ```bash
@@ -143,12 +112,95 @@ git apply --cached /tmp/group.patch
 3. Commit: `git commit -m "<message>"`
 4. Clean up temp files
 
-**Practical fallback:** If hunk-level splitting is complex and error-prone for the specific changes, fall back to file-level grouping and note this to the user. Correctness is more important than granularity.
+**Practical fallback:** If hunk-level splitting is complex and error-prone for the specific changes, fall back to file-level grouping and note this in the report. Correctness is more important than granularity.
 
 #### After all commits:
-1. Run `git log --oneline -N` (where N is the number of commits created) to show what was committed
-2. Report summary: "Created N commits: [list of commit subjects]"
-3. Check `git status` to confirm no unintended leftover changes (or report what's left uncommitted)
+1. Run `git log --oneline -N` (where N is the number of commits created) to verify
+2. Run `git status` to confirm no unintended leftover changes (or note what's left uncommitted)
+
+### Phase 5: Report Results
+
+After all commits are executed, output a detailed report with the following sections:
+
+#### Commits Created
+
+For each commit, show:
+- **Commit hash** (short form)
+- **Commit message**
+- **Files included** (and whether file-level or hunk-level staging was used)
+
+Example:
+
+```
+## Commits Created
+
+1. `a1b2c3d` — `feat(auth): add JWT token refresh logic`
+   - src/auth/refresh.ts (new file)
+   - src/auth/refresh.test.ts (new file)
+   - src/auth/types.ts (hunks: added RefreshToken interface)
+
+2. `e4f5g6h` — `fix(api): handle null response in user endpoint`
+   - src/api/users.ts (hunks: null check in getUser)
+   - src/api/users.test.ts (hunks: added null response test)
+
+3. `i7j8k9l` — `chore(deps): update lodash to 4.17.21`
+   - package.json (hunks: lodash version)
+   - package-lock.json (modified)
+```
+
+#### Grouping Rationale
+
+Briefly explain WHY changes were grouped the way they were. This helps the user understand the reasoning and decide if they want to adjust:
+
+```
+## Grouping Rationale
+
+- **Commit 1** groups the new refresh module with its test and type definition
+  because they form a single feature unit — the test can't exist without the
+  implementation, and the type is only used by the new module.
+- **Commit 2** is separated from commit 1 because the null-response fix is an
+  independent bug fix in a different module with its own test coverage.
+- **Commit 3** is isolated because dependency updates are a distinct maintenance
+  concern and should be independently revertable.
+```
+
+#### Remaining Changes
+
+If any files or hunks were intentionally left uncommitted (e.g., suspected secrets, unrelated work-in-progress), list them:
+
+```
+## Remaining Changes
+
+- .env.local — skipped (appears to contain secrets)
+- src/experiments/wip.ts — skipped (untracked, appears to be work-in-progress)
+```
+
+If the working tree is clean, state: "Working tree clean — all changes committed."
+
+#### Adjustment Instructions
+
+Always include this section so the user knows how to rearrange if they disagree with the grouping:
+
+```
+## Adjusting These Commits
+
+If you'd like to change the grouping, reword messages, or squash commits:
+
+  git rebase -i HEAD~N    # where N is the number of commits created
+
+In the interactive rebase editor:
+- **Reorder**: move lines to change commit order
+- **Squash**: change `pick` to `squash` (or `s`) to merge into the previous commit
+- **Reword**: change `pick` to `reword` (or `r`) to edit a commit message
+- **Drop**: delete a line to remove a commit entirely
+
+Or to undo all commits and start over:
+
+  git reset HEAD~N        # keeps changes staged
+  git reset --mixed HEAD~N  # keeps changes unstaged
+```
+
+Replace N with the actual number of commits created.
 
 ### Commit Message Format
 
@@ -169,9 +221,9 @@ Examples:
 
 ## Edge Cases
 
-- **No changes**: Inform user "Nothing to commit -- working tree clean"
+- **No changes**: Inform user "Nothing to commit — working tree clean"
 - **Only staged changes**: Include them in the analysis (they may have been intentionally staged)
-- **Only untracked files**: Ask if they should be committed or if any should be gitignored
-- **Single trivial change**: Don't over-engineer -- just propose one commit
+- **Only untracked files**: Include them in analysis and commit them. If any look like they should be gitignored, mention it in the report but still commit.
+- **Single trivial change**: Don't over-engineer — just create one commit
 - **Merge conflicts present**: Warn the user and do not attempt to commit
-- **Files that look like secrets** (.env, credentials, keys): Warn the user and exclude from commits unless explicitly confirmed
+- **Files that look like secrets** (.env, credentials, keys): Warn the user and exclude from commits. List them in the "Remaining Changes" section of the report.
