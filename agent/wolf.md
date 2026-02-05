@@ -131,10 +131,6 @@ permission:
   external_directory:
     ~/.opencode/memory: allow
     ~/.opencode/memory/*: allow
-blocked_commands:
-  - /commit
-  - /push
-  - /pr
 ---
 
 # The Wolf
