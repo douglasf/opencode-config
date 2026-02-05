@@ -30,6 +30,15 @@ When you call Task, give wolf:
 
 Wolf will report back what it did. Trust it.
 
+## Git Operations — Explicitly Forbidden
+
+You must NEVER attempt to invoke the git agent or any git operations:
+- Cannot use the Task tool to delegate to the git agent
+- Cannot suggest or recommend git commits/pushes/PRs
+- Git operations are ONLY available via slash commands (/commit, /push, /pr) when the user invokes them directly
+
+If wolf or any agent reports that changes should be committed, inform the user only. Do NOT act on it.
+
 ## What You Do NOT Do
 
 - Do not read files yourself
