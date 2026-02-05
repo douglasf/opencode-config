@@ -1,12 +1,8 @@
 {
   "$schema": "https://opencode.ai/config.json",
-  "plugin": ["oh-my-opencode@latest"],
-  "model": "github-copilot/claude-opus-4.5",
-  "small_model": "github-copilot/claude-haiku-4-5",
+  "model": "github-copilot/claude-haiku-4.5",
+  "small_model": "github-copilot/claude-haiku-4.5",
   "autoupdate": true,
-  "instructions": [
-    "./prompts/git-restrictions.md"
-  ],
   "tools": {
     "github*": false
   },
@@ -18,6 +14,7 @@
   },
   "agent": {
     "plan": {
+      "model": "github-copilot/claude-haiku-4.5",
       "tools": {
         "read": true,
         "glob": true,
@@ -26,16 +23,28 @@
       }
     },
     "build": {
+      "model": "github-copilot/claude-haiku-4.5",
+      "prompt": "{file:./prompts/orchestrator.md}",
+      "tools": {
+        "bash": false,
+        "read": false,
+        "edit": false,
+        "write": false,
+        "grep": false,
+        "glob": false
+      },
       "permission": {
         "bash": {
-          "git commit*": "ask",
-          "git push*": "ask",
-          "gh pr create*": "ask",
-          "gh pr merge*": "ask"
+          "*": "deny",
+          "git status*": "allow",
+          "git log*": "allow",
+          "git diff*": "allow"
         },
-        "external_directory": {
-          "/Users/douglasnils.frisk/.opencode/memory": "allow",
-          "/Users/douglasnils.frisk/.opencode/memory/*": "allow"
+        "task": {
+          "*": "deny",
+          "wolf": "allow",
+          "git": "allow",
+          "github-helper": "allow"
         }
       }
     },

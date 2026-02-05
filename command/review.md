@@ -1,6 +1,7 @@
 ---
 description: Review changes in a GitHub PR
 model: github-copilot/claude-opus-4.5
+agent: wolf
 ---
 
 Review the changes in a GitHub Pull Request, focusing ONLY on the diff between the PR's base and head.

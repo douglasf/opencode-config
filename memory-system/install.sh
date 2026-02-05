@@ -14,6 +14,12 @@ fi
 ln -sf "$SCRIPT_DIR/scripts/load-memory.sh" ~/.opencode/scripts/load-memory.sh
 echo "✓ Linked load-memory.sh"
 
+if [ -L ~/.opencode/scripts/memory-precompact.sh ]; then
+    rm ~/.opencode/scripts/memory-precompact.sh
+fi
+ln -sf "$SCRIPT_DIR/scripts/memory-precompact.sh" ~/.opencode/scripts/memory-precompact.sh
+echo "✓ Linked memory-precompact.sh"
+
 if [ -L ~/.claude/rules/memory-system.md ]; then
     rm ~/.claude/rules/memory-system.md
 fi
