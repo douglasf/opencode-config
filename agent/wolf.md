@@ -8,7 +8,10 @@ instructions:
   - ../prompts/git-restrictions.md
 permission:
   bash:
+    # Default: allow local build/test/lint commands
     "*": allow
+
+    # ── Git: deny all, then allow read-only ──
     "git *": deny
     "git status": allow
     "git status *": allow
@@ -44,9 +47,90 @@ permission:
     "git tag --list": allow
     "git reflog": allow
     "git reflog *": allow
+
+    # ── GitHub CLI: deny mutating, allow read-only ──
+    "gh *": deny
+    "gh pr view *": allow
+    "gh pr diff *": allow
+    "gh pr list *": allow
+    "gh pr status *": allow
+    "gh pr checks *": allow
+    "gh issue view *": allow
+    "gh issue list *": allow
+    "gh issue status *": allow
+    "gh repo view *": allow
+    "gh api */pulls/*": allow
+    "gh api */issues/*": allow
+    "gh auth status*": allow
+
+    # ── Cloud / IaC CLIs: deny all mutating operations ──
+    "terraform *": deny
+    "terraform plan*": allow
+    "terraform show*": allow
+    "terraform state list*": allow
+    "terraform state show*": allow
+    "terraform output*": allow
+    "terraform validate*": allow
+    "terraform fmt*": allow
+    "tofu *": deny
+    "tofu plan*": allow
+    "tofu show*": allow
+    "tofu validate*": allow
+    "tofu fmt*": allow
+    "pulumi *": deny
+    "aws *": deny
+    "gcloud *": deny
+    "az *": deny
+
+    # ── Container / orchestration: deny remote, allow local ──
+    "kubectl *": deny
+    "helm *": deny
+    "docker push *": deny
+    "docker login *": deny
+
+    # ── Package publishing: deny ──
+    "npm publish*": deny
+    "npm unpublish*": deny
+    "yarn publish*": deny
+    "pnpm publish*": deny
+    "pip upload*": deny
+    "twine upload*": deny
+    "cargo publish*": deny
+    "gem push*": deny
+
+    # ── Dangerous local operations: deny ──
+    "sudo *": deny
+    "su *": deny
+    "mkfs*": deny
+    "dd *": deny
+    "shutdown*": deny
+    "reboot*": deny
+    "launchctl *": deny
+    "systemctl *": deny
+    "crontab *": deny
+    "chmod -R 777*": deny
+    "chown -R *": deny
+
+    # ── Remote access: deny ──
+    "ssh *": deny
+    "scp *": deny
+    "rsync *": deny
+    "sftp *": deny
+
+    # ── Misc dangerous: deny ──
+    "open *": deny
+    "xdg-open *": deny
+    "mail *": deny
+    "sendmail *": deny
+    "curl -X POST*": deny
+    "curl -X PUT*": deny
+    "curl -X DELETE*": deny
+    "curl -X PATCH*": deny
+    "wget --post*": deny
+
   external_directory:
-    /Users/douglasnils.frisk/.opencode/memory: allow
-    /Users/douglasnils.frisk/.opencode/memory/*: allow
+    ~/.opencode/memory: allow
+    ~/.opencode/memory/*: allow
 blocked_commands:
   - /commit
   - /push
