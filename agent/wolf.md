@@ -128,6 +128,11 @@ permission:
     "curl -X PATCH*": deny
     "wget --post*": deny
 
+  task:
+    # Wolf must not delegate to other agents — especially git
+    "*": deny
+    "git": deny
+
   external_directory:
     ~/.opencode/memory: allow
     ~/.opencode/memory/*: allow
