@@ -3,7 +3,7 @@ description: >-
   Git operations agent with full permissions to commit, push, and create pull requests.
   This agent should be invoked by slash commands for git operations like /commit, /push, and /pr.
 mode: subagent
-model: github-copilot/claude-haiku-4.5
+model: github-copilot/claude-opus-4.6
 permission:
   bash:
     git commit*: allow
