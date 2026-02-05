@@ -221,9 +221,9 @@ Another piece of information.
 
 ## Dependencies
 
-- **oh-my-opencode** plugin (for `claude-code-hooks` and `rules-injector` hooks)
 - Bash shell
 - Git (for repo identification)
+- Claude Code hooks support (via `~/.claude/settings.json`)
 
 ## File Summary
 
