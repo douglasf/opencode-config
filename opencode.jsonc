@@ -43,7 +43,6 @@
         "task": {
           "*": "deny",
           "wolf": "allow",
-          "git": "allow",
           "github-helper": "allow"
         }
       }
