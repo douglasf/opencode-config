@@ -4,8 +4,6 @@ description: >-
   It reads, writes, edits, searches, and executes. Returns results for orchestration.
 mode: subagent
 model: github-copilot/claude-opus-4.6
-instructions:
-  - ../prompts/git-restrictions.md
 permission:
   bash:
     # Default: allow local build/test/lint commands
@@ -132,10 +130,6 @@ permission:
     # Wolf must not delegate to other agents — especially git
     "*": deny
     "git": deny
-
-  external_directory:
-    ~/.opencode/memory: allow
-    ~/.opencode/memory/*: allow
 ---
 
 # The Wolf
