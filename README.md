@@ -2,6 +2,29 @@
 
 Personal OpenCode setup with custom agents, commands, and plugins. Lives at `~/.config/opencode/` and provides global defaults for all projects.
 
+## Good Usage
+
+This config uses a **multi-agent architecture**. When you type in OpenCode, you're talking to the **orchestrator** — it never does work itself. Instead, it delegates to specialized agents: **wolf** (reads, writes, searches, runs commands — all the actual work), **git** (commits, pushes, PRs — only via slash commands), and **quick-answer** (fast, concise responses with no deep investigation). The orchestrator breaks your request into subtasks, dispatches them to wolf (in parallel when possible), and synthesizes the results.
+
+### Day-to-Day Workflow
+
+- **Ask a question or request a change** — just type naturally. The orchestrator will delegate to wolf, which investigates and executes autonomously. You don't need to manage the agents yourself.
+- **Quick lookups** — use `/quick how do I do X` for fast, direct answers without the full investigation cycle. Great for syntax reminders, port numbers, or quick factual questions.
+- **Code changes** — describe what you want changed and where. Wolf will read the relevant files, make edits, and run tests if appropriate. Review the changes before committing.
+- **Committing** — the orchestrator will *never* commit on its own. When you're happy with the changes, use `/commit` to stage and commit with an auto-generated message. Use `/push` and `/pr` for the rest of the git workflow.
+- **Code review** — use `/review` to get a review of your staged or unstaged changes before committing.
+
+### Strict vs YOLO Mode
+
+By default, **strict mode** is active everywhere — the AI cannot run arbitrary commands or edit files without guardrails. This is what you want for work repos. For personal projects where speed matters more than safety, you can enable **YOLO mode** per repo (see instructions below). You can check which mode is active by looking for a `.opencode/opencode.jsonc` symlink in the project root.
+
+### Things to Know
+
+- The orchestrator speaks in the style of Winston Wolf from Pulp Fiction. This is intentional — don't be alarmed.
+- Wolf reports back what it did but does not commit. You always control when changes are committed.
+- If you're in strict mode and wolf says it can't run a command, that's the guardrails working. Either switch to YOLO mode or run the command yourself.
+- Slash commands (`/commit`, `/push`, `/pr`, `/review`, `/quick`) are the primary way to trigger specific workflows. Type `/` to see what's available.
+
 ## Structure
 
 ```
