@@ -6,10 +6,32 @@ mode: subagent
 model: github-copilot/claude-opus-4.6
 permission:
   bash:
-    git commit*: allow
-    git push*: allow
-    gh pr create*: allow
-    gh pr merge*: allow
+    # Default: deny everything, then whitelist git/gh commands
+    "*": deny
+
+    # ── Git commands needed for commit, push, PR workflows ──
+    "git status*": allow
+    "git diff*": allow
+    "git log*": allow
+    "git add*": allow
+    "git apply*": allow
+    "git commit*": allow
+    "git push*": allow
+    "git rev-list*": allow
+    "git rev-parse*": allow
+    "git branch*": allow
+    "git remote*": allow
+
+    # ── GitHub CLI: PR operations ──
+    "gh pr create*": allow
+    "gh pr merge*": allow
+    "gh pr view*": allow
+    "gh pr diff*": allow
+    "gh pr list*": allow
+
+    # ── GitHub CLI: auth for multi-account switching ──
+    "gh auth switch*": allow
+    "gh auth status*": allow
 tools:
   write: false
   edit: false
