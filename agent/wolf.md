@@ -6,11 +6,164 @@ mode: subagent
 model: github-copilot/claude-opus-4.6
 permission:
   bash:
-    # Default: allow local build/test/lint commands
-    "*": allow
+    # ═══════════════════════════════════════════════════════════
+    # DEFAULT-DENY: Only explicitly whitelisted commands run.
+    # Anything not listed below is blocked.
+    # ═══════════════════════════════════════════════════════════
+    "*": deny
 
-    # ── Git: deny all, then allow read-only ──
-    "git *": deny
+    # ── Safe shell utilities (read-only) ──
+    "ls": allow
+    "ls *": allow
+    "pwd": allow
+    "echo *": allow
+    "cat *": allow
+    "head *": allow
+    "tail *": allow
+    "wc *": allow
+    "sort *": allow
+    "uniq *": allow
+    "diff *": allow
+    "which *": allow
+    "env": allow
+    "printenv": allow
+    "printenv *": allow
+    "file *": allow
+    "stat *": allow
+    "basename *": allow
+    "dirname *": allow
+    "realpath *": allow
+    "tee *": allow
+    "tr *": allow
+    "cut *": allow
+    "paste *": allow
+    "xargs *": allow
+    "find *": allow
+    "grep *": allow
+    "rg *": allow
+    "sed *": allow
+    "awk *": allow
+    "jq *": allow
+    "yq *": allow
+    "tree *": allow
+    "tree": allow
+
+    # ── Node / npm / JS ecosystem ──
+    "node *": allow
+    "npm test": allow
+    "npm test *": allow
+    "npm run *": allow
+    "npm ci": allow
+    "npm ci *": allow
+    "npm install": allow
+    "npm install *": allow
+    "npm ls *": allow
+    "npm ls": allow
+    "npm outdated*": allow
+    "npm audit*": allow
+    "npm explain *": allow
+    "npm why *": allow
+    "npx *": deny
+    "yarn install --frozen-lockfile*": allow
+    "yarn test*": allow
+    "yarn run *": allow
+    "yarn why *": allow
+    "pnpm install --frozen-lockfile*": allow
+    "pnpm test*": allow
+    "pnpm run *": allow
+    "tsx *": deny
+    "ts-node *": deny
+    "tsc *": allow
+    "eslint *": allow
+    "prettier *": allow
+    "vitest *": allow
+    "jest *": allow
+    "mocha *": allow
+
+    # ── Python (NO raw python/python3 — arbitrary code execution) ──
+    "python *": deny
+    "python3 *": deny
+    "pip install -r*": allow
+    "pip install -e*": allow
+    "pip list*": allow
+    "pip show *": allow
+    "pip freeze*": allow
+    "pip check*": allow
+    "pip3 install -r*": allow
+    "pip3 install -e*": allow
+    "pip3 list*": allow
+    "pip3 show *": allow
+    "pip3 freeze*": allow
+    "pip3 check*": allow
+    "pytest*": allow
+    "mypy *": allow
+    "ruff *": allow
+    "black *": allow
+    "flake8 *": allow
+    "pylint *": allow
+    "isort *": allow
+    "uv run *": allow
+    "uv sync*": allow
+    "poetry install*": allow
+    "poetry run *": allow
+    "poetry show *": allow
+
+    # ── Go ──
+    "go test*": allow
+    "go build*": allow
+    "go run*": deny
+    "go vet*": allow
+    "go fmt*": allow
+    "go mod tidy*": allow
+    "go mod download*": allow
+    "go mod verify*": allow
+    "go generate*": allow
+    "go list*": allow
+    "go version*": allow
+    "go env*": allow
+    "golangci-lint *": allow
+    "gofmt *": allow
+
+    # ── Rust ──
+    "cargo test*": allow
+    "cargo build*": allow
+    "cargo run*": deny
+    "cargo check*": allow
+    "cargo fmt*": allow
+    "cargo clippy*": allow
+    "cargo doc*": allow
+    "cargo bench*": allow
+    "cargo tree*": allow
+    "cargo update*": allow
+    "rustc *": allow
+    "rustfmt *": allow
+
+    # ── Make / build tools ──
+    "make": allow
+    "make *": allow
+    "cmake *": allow
+    "ninja *": allow
+    "just *": allow
+    "task *": allow
+    "bazel build*": allow
+    "bazel test*": allow
+    "bazel query*": allow
+
+    # ── Docker (local build only — no run/exec/push/login) ──
+    "docker build*": allow
+    "docker compose build*": allow
+    "docker compose up*": allow
+    "docker compose down*": allow
+    "docker compose ps*": allow
+    "docker compose logs*": allow
+    "docker compose config*": allow
+    "docker images*": allow
+    "docker ps*": allow
+    "docker inspect*": allow
+    "docker version*": allow
+    "docker info*": allow
+
+    # ── Git: read-only commands only ──
     "git status": allow
     "git status *": allow
     "git log": allow
@@ -46,8 +199,7 @@ permission:
     "git reflog": allow
     "git reflog *": allow
 
-    # ── GitHub CLI: deny mutating, allow read-only ──
-    "gh *": deny
+    # ── GitHub CLI: read-only commands only ──
     "gh pr view *": allow
     "gh pr diff *": allow
     "gh pr list *": allow
@@ -61,8 +213,7 @@ permission:
     "gh api */issues/*": allow
     "gh auth status*": allow
 
-    # ── Cloud / IaC CLIs: deny all mutating operations ──
-    "terraform *": deny
+    # ── Terraform / IaC: read-only commands only ──
     "terraform plan*": allow
     "terraform show*": allow
     "terraform state list*": allow
@@ -70,25 +221,131 @@ permission:
     "terraform output*": allow
     "terraform validate*": allow
     "terraform fmt*": allow
-    "tofu *": deny
     "tofu plan*": allow
     "tofu show*": allow
     "tofu validate*": allow
     "tofu fmt*": allow
+
+    # ── Misc safe read-only tools ──
+    "curl *": allow
+    "wget *": allow
+    "dig *": allow
+    "nslookup *": allow
+    "ping -c *": allow
+    "nc -z *": allow
+    "openssl s_client *": allow
+
+    # ═══════════════════════════════════════════════════════════
+    # EXPLICIT DENY (defense-in-depth — redundant with default
+    # deny, but kept for clarity and as guardrails if the
+    # default is ever accidentally changed back to allow)
+    # ═══════════════════════════════════════════════════════════
+
+    # ── Git mutations: deny ──
+    "git add*": deny
+    "git commit*": deny
+    "git push*": deny
+    "git pull*": deny
+    "git merge*": deny
+    "git rebase*": deny
+    "git reset*": deny
+    "git checkout*": deny
+    "git switch*": deny
+    "git restore*": deny
+    "git cherry-pick*": deny
+    "git revert*": deny
+    "git stash": deny
+    "git stash *": deny
+    "git clean*": deny
+    "git rm*": deny
+    "git mv*": deny
+    "git tag -a*": deny
+    "git tag -d*": deny
+    "git tag -f*": deny
+    "git branch -d*": deny
+    "git branch -D*": deny
+    "git branch -m*": deny
+    "git branch -M*": deny
+    "git fetch*": deny
+    "git clone*": deny
+    "git init*": deny
+    "git submodule*": deny
+    "git worktree*": deny
+    "git config*": deny
+    "git am*": deny
+    "git apply*": deny
+    "git format-patch*": deny
+
+    # ── GitHub CLI mutations: deny ──
+    "gh pr create*": deny
+    "gh pr merge*": deny
+    "gh pr close*": deny
+    "gh pr edit*": deny
+    "gh pr comment*": deny
+    "gh pr review*": deny
+    "gh pr reopen*": deny
+    "gh issue create*": deny
+    "gh issue close*": deny
+    "gh issue edit*": deny
+    "gh issue comment*": deny
+    "gh issue reopen*": deny
+    "gh repo create*": deny
+    "gh repo delete*": deny
+    "gh repo fork*": deny
+    "gh release *": deny
+    "gh run *": deny
+    "gh workflow *": deny
+    "gh secret *": deny
+    "gh variable *": deny
+
+    # ── Cloud / IaC: deny all mutations ──
+    "terraform apply*": deny
+    "terraform destroy*": deny
+    "terraform import*": deny
+    "terraform taint*": deny
+    "terraform untaint*": deny
+    "terraform state rm*": deny
+    "terraform state mv*": deny
+    "terraform state push*": deny
+    "terraform workspace new*": deny
+    "terraform workspace delete*": deny
+    "tofu apply*": deny
+    "tofu destroy*": deny
+    "tofu import*": deny
     "pulumi *": deny
     "aws *": deny
     "gcloud *": deny
     "az *": deny
 
-    # ── Container / orchestration: deny remote, allow local ──
+    # ── Container / orchestration: deny remote/exec ──
     "kubectl *": deny
     "helm *": deny
-    "docker push *": deny
-    "docker login *": deny
+    "docker run*": deny
+    "docker exec*": deny
+    "docker push*": deny
+    "docker login*": deny
+    "docker pull*": deny
+    "docker rm*": deny
+    "docker rmi*": deny
+    "docker stop*": deny
+    "docker kill*": deny
+    "docker tag*": deny
+    "docker save*": deny
+    "docker load*": deny
+    "docker export*": deny
+    "docker import*": deny
+    "docker network*": deny
+    "docker volume*": deny
+    "docker system prune*": deny
+    "docker compose exec*": deny
 
     # ── Package publishing: deny ──
     "npm publish*": deny
     "npm unpublish*": deny
+    "npm deprecate*": deny
+    "npm owner*": deny
+    "npm access*": deny
+    "npm token*": deny
     "yarn publish*": deny
     "pnpm publish*": deny
     "pip upload*": deny
@@ -96,24 +353,33 @@ permission:
     "cargo publish*": deny
     "gem push*": deny
 
-    # ── Dangerous local operations: deny ──
+    # ── Dangerous system operations: deny ──
     "sudo *": deny
     "su *": deny
     "mkfs*": deny
     "dd *": deny
     "shutdown*": deny
     "reboot*": deny
+    "halt*": deny
+    "poweroff*": deny
     "launchctl *": deny
     "systemctl *": deny
+    "service *": deny
     "crontab *": deny
     "chmod -R 777*": deny
     "chown -R *": deny
+    "rm -rf /*": deny
+    "rm -rf ~*": deny
 
     # ── Remote access: deny ──
     "ssh *": deny
     "scp *": deny
     "rsync *": deny
     "sftp *": deny
+    "telnet *": deny
+    "ftp *": deny
+    "nc -e*": deny
+    "ncat *": deny
 
     # ── Misc dangerous: deny ──
     "open *": deny
