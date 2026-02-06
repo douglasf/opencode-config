@@ -24,11 +24,12 @@
       "prompt": "{file:./prompts/orchestrator.md}",
       "tools": {
         "bash": false,
-        "read": false,
+        "read": true,
         "edit": false,
         "write": false,
         "grep": false,
-        "glob": false
+        "glob": false,
+        "task": true
       },
       "permission": {
         "bash": {
