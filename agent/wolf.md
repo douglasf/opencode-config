@@ -205,6 +205,7 @@ permission:
     "gh pr list *": allow
     "gh pr status *": allow
     "gh pr checks *": allow
+    "gh pr checks": allow
     "gh issue view *": allow
     "gh issue list *": allow
     "gh issue status *": allow
@@ -212,6 +213,21 @@ permission:
     "gh api */pulls/*": allow
     "gh api */issues/*": allow
     "gh auth status*": allow
+
+    # ── GitHub Actions / CI: read-only ──
+    "gh run list*": allow
+    "gh run view*": allow
+    "gh run download*": allow
+    "gh run watch*": allow
+    "gh workflow list*": allow
+    "gh workflow view*": allow
+    "gh api */actions/runs*": allow
+    "gh api */actions/runs/*": allow
+    "gh api */actions/jobs/*": allow
+    "gh api */actions/workflows*": allow
+    "gh api */actions/workflows/*": allow
+    "gh api */check-runs*": allow
+    "gh api */check-suites*": allow
 
     # ── Terraform / IaC: read-only commands only ──
     "terraform plan*": allow
@@ -293,10 +309,26 @@ permission:
     "gh repo delete*": deny
     "gh repo fork*": deny
     "gh release *": deny
-    "gh run *": deny
-    "gh workflow *": deny
     "gh secret *": deny
     "gh variable *": deny
+
+    # ── GitHub Actions mutations: deny ──
+    "gh run cancel*": deny
+    "gh run delete*": deny
+    "gh run rerun*": deny
+    "gh workflow run*": deny
+    "gh workflow disable*": deny
+    "gh workflow enable*": deny
+
+    # ── GitHub API mutations (defense-in-depth): deny ──
+    "gh api -X POST*": deny
+    "gh api -X PUT*": deny
+    "gh api -X DELETE*": deny
+    "gh api -X PATCH*": deny
+    "gh api --method POST*": deny
+    "gh api --method PUT*": deny
+    "gh api --method DELETE*": deny
+    "gh api --method PATCH*": deny
 
     # ── Cloud / IaC: deny all mutations ──
     "terraform apply*": deny
