@@ -3,9 +3,7 @@
   "model": "github-copilot/claude-haiku-4.5",
   "small_model": "github-copilot/claude-haiku-4.5",
   "autoupdate": true,
-  "tools": {
-    "github*": false
-  },
+  "tools": {},
   "lsp": {
     "kotlin": {
       "command": ["kotlin-lsp", "--stdio"],
@@ -40,20 +38,12 @@
           "git log*": "allow",
           "git diff*": "allow"
         },
-        "read": "ask",
+        "read": "allow",
         "task": {
           "*": "deny",
           "wolf": "allow",
-          "github-helper": "allow",
           "git": "deny"
         }
-      }
-    },
-    "github-helper": {
-      "description": "Helper for GitHub operations - use when working with GitHub issues, PRs, or repositories",
-      "mode": "subagent",
-      "tools": {
-        "github*": true
       }
     }
   }
