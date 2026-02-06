@@ -1,6 +1,5 @@
 ---
 description: Review changes in a GitHub PR
-model: github-copilot/claude-opus-4.5
 agent: wolf
 ---
 
