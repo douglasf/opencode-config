@@ -1,0 +1,462 @@
+{
+  // ============================================================================
+  // YOLO MODE - Relaxed Security Profile
+  // ============================================================================
+  //
+  // This is the "personal repo" configuration. It relaxes overly cautious
+  // restrictions while keeping protection against genuinely dangerous operations.
+  //
+  // What's relaxed (compared to hardened defaults):
+  //   - Docker: run, exec, build allowed without prompting
+  //   - Package managers: npm install, pip install allowed freely
+  //   - Network tools: curl, wget allowed for data fetching
+  //   - Common dev commands run without friction
+  //
+  // What's still protected:
+  //   - Git safety: force-push, hard reset, rebase still denied/ask
+  //   - Dangerous system ops: rm -rf /, chmod 777, mkfs, dd, etc.
+  //   - Cloud CLI mutations: aws/gcloud/az destructive commands
+  //   - Secrets: .env files, credentials, keys
+  //
+  // Usage: Copy this file to opencode.jsonc or merge the permission block
+  //        into your existing config.
+  // ============================================================================
+
+  "$schema": "https://opencode.ai/config.json",
+
+  "agent": {
+    // ======================================================================
+    // WOLF (executor) - YOLO mode relaxations live HERE
+    // ======================================================================
+    // The wolf is the only agent that gets relaxed permissions in YOLO mode.
+    // It does all the actual work: running commands, editing files, etc.
+    //
+    // What's relaxed (compared to hardened defaults):
+    //   - Docker: run, exec, build allowed without prompting
+    //   - Package managers: npm install, pip install allowed freely
+    //   - Network tools: curl, wget allowed for data fetching
+    //   - Common dev commands run without friction
+    //
+    // What's still protected:
+    //   - Git safety: force-push, hard reset still denied
+    //   - Dangerous system ops: rm -rf /, chmod 777, mkfs, dd, etc.
+    //   - Cloud CLI mutations: aws/gcloud/az destructive commands
+    // ======================================================================
+    "wolf": {
+      "permission": {
+        // ====================================================================
+        // File operations - allow freely within the project
+        // ====================================================================
+        "read": "allow",
+        "edit": "allow",
+        "glob": "allow",
+        "grep": "allow",
+        "list": "allow",
+
+        // ====================================================================
+        // Bash permissions - the heart of YOLO mode
+        // ====================================================================
+        "bash": {
+          // Default: ask before running unknown commands
+          "*": "ask",
+
+          // ------------------------------------------------------------------
+          // Git: read-only operations are fine, mutations need care
+          // ------------------------------------------------------------------
+          "git status*": "allow",
+          "git log*": "allow",
+          "git diff*": "allow",
+          "git show*": "allow",
+          "git branch*": "allow",
+          "git tag*": "allow",
+          "git remote -v*": "allow",
+          "git stash list*": "allow",
+          "git blame*": "allow",
+          "git shortlog*": "allow",
+          "git rev-parse*": "allow",
+          "git ls-files*": "allow",
+          "git ls-tree*": "allow",
+          "git cat-file*": "allow",
+          "git config --get*": "allow",
+          "git config --list*": "allow",
+
+          // Git write ops that are safe enough for YOLO
+          "git add*": "allow",
+          "git commit*": "allow",
+          "git checkout*": "allow",
+          "git switch*": "allow",
+          "git merge*": "ask",
+          "git rebase*": "ask",
+          "git stash*": "allow",
+          "git pull*": "allow",
+          "git fetch*": "allow",
+          "git push": "allow",
+          "git push origin*": "allow",
+
+          // Git operations that remain dangerous
+          "git push --force*": "deny",
+          "git push -f*": "deny",
+          "git push *--force*": "deny",
+          "git reset --hard*": "deny",
+          "git clean -fd*": "ask",
+
+          // ------------------------------------------------------------------
+          // Docker: allowed in YOLO mode (relaxed from default)
+          // ------------------------------------------------------------------
+          "docker build*": "allow",
+          "docker run*": "allow",
+          "docker exec*": "allow",
+          "docker compose*": "allow",
+          "docker-compose*": "allow",
+          "docker ps*": "allow",
+          "docker images*": "allow",
+          "docker logs*": "allow",
+          "docker inspect*": "allow",
+          "docker stop*": "allow",
+          "docker start*": "allow",
+          "docker restart*": "allow",
+          "docker pull*": "allow",
+          "docker network*": "allow",
+          "docker volume*": "allow",
+          "docker cp*": "allow",
+          "docker stats*": "allow",
+          "docker top*": "allow",
+          // Still ask before destructive docker operations
+          "docker rm*": "ask",
+          "docker rmi*": "ask",
+          "docker system prune*": "ask",
+
+          // ------------------------------------------------------------------
+          // Package managers: freely allowed (relaxed from default)
+          // ------------------------------------------------------------------
+          "npm install*": "allow",
+          "npm ci*": "allow",
+          "npm run*": "allow",
+          "npm test*": "allow",
+          "npm start*": "allow",
+          "npm exec*": "allow",
+          "npx*": "allow",
+          "npm list*": "allow",
+          "npm outdated*": "allow",
+          "npm audit*": "allow",
+          "npm pack*": "allow",
+          "npm init*": "allow",
+          "npm version*": "allow",
+          // npm publish still requires confirmation
+          "npm publish*": "ask",
+
+          "yarn*": "allow",
+          "pnpm*": "allow",
+          "bun install*": "allow",
+          "bun run*": "allow",
+          "bun test*": "allow",
+          "bun*": "allow",
+
+          "pip install*": "allow",
+          "pip list*": "allow",
+          "pip show*": "allow",
+          "pip freeze*": "allow",
+          "pip check*": "allow",
+          "pip3 install*": "allow",
+          "pip3 list*": "allow",
+          "python -m pip*": "allow",
+          "python3 -m pip*": "allow",
+          "pipx*": "allow",
+          "uv pip*": "allow",
+          "uv sync*": "allow",
+          "uv run*": "allow",
+          "uv*": "allow",
+          "poetry install*": "allow",
+          "poetry add*": "allow",
+          "poetry run*": "allow",
+          "poetry*": "allow",
+          "pdm*": "allow",
+
+          "cargo build*": "allow",
+          "cargo run*": "allow",
+          "cargo test*": "allow",
+          "cargo check*": "allow",
+          "cargo clippy*": "allow",
+          "cargo fmt*": "allow",
+          "cargo add*": "allow",
+          "cargo install*": "allow",
+          "cargo*": "allow",
+
+          "go build*": "allow",
+          "go run*": "allow",
+          "go test*": "allow",
+          "go mod*": "allow",
+          "go get*": "allow",
+          "go install*": "allow",
+          "go vet*": "allow",
+          "go fmt*": "allow",
+          "go*": "allow",
+
+          "gem install*": "allow",
+          "bundle install*": "allow",
+          "bundle exec*": "allow",
+
+          "composer install*": "allow",
+          "composer require*": "allow",
+
+          "swift build*": "allow",
+          "swift run*": "allow",
+          "swift test*": "allow",
+
+          "gradle*": "allow",
+          "./gradlew*": "allow",
+          "mvn*": "allow",
+          "./mvnw*": "allow",
+
+          // ------------------------------------------------------------------
+          // Network tools: allowed for data fetching (relaxed from default)
+          // ------------------------------------------------------------------
+          "curl*": "allow",
+          "wget*": "allow",
+          "http*": "allow",
+
+          // ------------------------------------------------------------------
+          // Build & dev tools: always allowed
+          // ------------------------------------------------------------------
+          "make*": "allow",
+          "cmake*": "allow",
+          "ninja*": "allow",
+          "just*": "allow",
+          "task*": "allow",
+          "tsc*": "allow",
+          "node*": "allow",
+          "deno*": "allow",
+          "python*": "allow",
+          "python3*": "allow",
+          "ruby*": "allow",
+          "perl*": "allow",
+          "java*": "allow",
+          "javac*": "allow",
+          "gcc*": "allow",
+          "g++*": "allow",
+          "clang*": "allow",
+          "rustc*": "allow",
+          "dotnet*": "allow",
+          "elixir*": "allow",
+          "mix*": "allow",
+          "erl*": "allow",
+
+          // ------------------------------------------------------------------
+          // Testing & quality tools
+          // ------------------------------------------------------------------
+          "jest*": "allow",
+          "vitest*": "allow",
+          "pytest*": "allow",
+          "mocha*": "allow",
+          "rspec*": "allow",
+          "phpunit*": "allow",
+          "eslint*": "allow",
+          "prettier*": "allow",
+          "biome*": "allow",
+          "black*": "allow",
+          "ruff*": "allow",
+          "mypy*": "allow",
+          "flake8*": "allow",
+          "pylint*": "allow",
+          "rubocop*": "allow",
+          "shellcheck*": "allow",
+
+          // ------------------------------------------------------------------
+          // Common utilities: safe to run
+          // ------------------------------------------------------------------
+          "cat*": "allow",
+          "head*": "allow",
+          "tail*": "allow",
+          "less*": "allow",
+          "more*": "allow",
+          "wc*": "allow",
+          "sort*": "allow",
+          "uniq*": "allow",
+          "diff*": "allow",
+          "grep*": "allow",
+          "rg*": "allow",
+          "ag*": "allow",
+          "find*": "allow",
+          "fd*": "allow",
+          "ls*": "allow",
+          "tree*": "allow",
+          "pwd*": "allow",
+          "which*": "allow",
+          "whereis*": "allow",
+          "whoami*": "allow",
+          "hostname*": "allow",
+          "uname*": "allow",
+          "date*": "allow",
+          "echo*": "allow",
+          "printf*": "allow",
+          "env*": "allow",
+          "printenv*": "allow",
+          "file*": "allow",
+          "stat*": "allow",
+          "du*": "allow",
+          "df*": "allow",
+          "free*": "allow",
+          "top*": "allow",
+          "ps*": "allow",
+          "lsof*": "allow",
+          "netstat*": "allow",
+          "ss*": "allow",
+          "id*": "allow",
+          "groups*": "allow",
+          "basename*": "allow",
+          "dirname*": "allow",
+          "realpath*": "allow",
+          "readlink*": "allow",
+          "md5*": "allow",
+          "sha*": "allow",
+          "base64*": "allow",
+          "jq*": "allow",
+          "yq*": "allow",
+          "sed*": "allow",
+          "awk*": "allow",
+          "cut*": "allow",
+          "tr*": "allow",
+          "xargs*": "allow",
+          "tee*": "allow",
+          "tar*": "allow",
+          "zip*": "allow",
+          "unzip*": "allow",
+          "gzip*": "allow",
+          "gunzip*": "allow",
+          "touch*": "allow",
+          "mkdir*": "allow",
+          "cp*": "allow",
+          "mv*": "allow",
+          "ln*": "allow",
+          "test*": "allow",
+          "[ *": "allow",
+          "[[ *": "allow",
+          "true*": "allow",
+          "false*": "allow",
+          "nproc*": "allow",
+          "sysctl*": "allow",
+
+          // File removal: ask for safety, deny recursive root
+          "rm*": "ask",
+          "rm -rf /*": "deny",
+          "rm -rf ~*": "deny",
+
+          // ------------------------------------------------------------------
+          // Kubernetes: read operations allowed, mutations need confirmation
+          // ------------------------------------------------------------------
+          "kubectl get*": "allow",
+          "kubectl describe*": "allow",
+          "kubectl logs*": "allow",
+          "kubectl top*": "allow",
+          "kubectl config*": "allow",
+          "kubectl cluster-info*": "allow",
+          "kubectl version*": "allow",
+          "kubectl api-resources*": "allow",
+          "kubectl explain*": "allow",
+          "kubectl auth*": "allow",
+          "kubectl apply*": "ask",
+          "kubectl delete*": "ask",
+          "kubectl exec*": "ask",
+          "kubectl port-forward*": "allow",
+          "helm list*": "allow",
+          "helm status*": "allow",
+          "helm get*": "allow",
+          "helm template*": "allow",
+          "helm install*": "ask",
+          "helm upgrade*": "ask",
+          "helm uninstall*": "ask",
+
+          // ------------------------------------------------------------------
+          // Cloud CLIs: read-only allowed, mutations DENIED
+          // ------------------------------------------------------------------
+          "aws s3 ls*": "allow",
+          "aws s3 cp*": "ask",
+          "aws sts*": "allow",
+          "aws configure list*": "allow",
+          "aws*": "ask",
+
+          "gcloud config list*": "allow",
+          "gcloud auth list*": "allow",
+          "gcloud projects list*": "allow",
+          "gcloud*": "ask",
+
+          "az account show*": "allow",
+          "az account list*": "allow",
+          "az*": "ask",
+
+          "terraform plan*": "allow",
+          "terraform validate*": "allow",
+          "terraform fmt*": "allow",
+          "terraform init*": "allow",
+          "terraform apply*": "deny",
+          "terraform destroy*": "deny",
+
+          // ------------------------------------------------------------------
+          // Dangerous system operations: ALWAYS DENIED
+          // ------------------------------------------------------------------
+          "chmod 777*": "deny",
+          "chmod -R 777*": "deny",
+          "chown*": "ask",
+          "mkfs*": "deny",
+          "fdisk*": "deny",
+          "dd*": "deny",
+          "mount*": "deny",
+          "umount*": "deny",
+          "shutdown*": "deny",
+          "reboot*": "deny",
+          "halt*": "deny",
+          "poweroff*": "deny",
+          "init*": "deny",
+          "systemctl*": "ask",
+          "service*": "ask",
+          "launchctl*": "ask",
+          "kill*": "ask",
+          "killall*": "ask",
+          "pkill*": "ask",
+          "sudo*": "deny",
+          "su *": "deny",
+          "passwd*": "deny",
+          "useradd*": "deny",
+          "userdel*": "deny",
+          "usermod*": "deny",
+          "groupadd*": "deny",
+          "visudo*": "deny",
+          "crontab*": "ask",
+          "iptables*": "deny",
+          "nft*": "deny",
+          "ufw*": "deny",
+
+          // Prevent writing to sensitive system paths
+          "> /etc/*": "deny",
+          "tee /etc/*": "deny",
+          "> /usr/*": "deny",
+          "> /var/*": "deny",
+          "> /sys/*": "deny",
+          "> /proc/*": "deny"
+        },
+
+        // ====================================================================
+        // Task delegation
+        // ====================================================================
+        "task": "allow",
+
+        // ====================================================================
+        // Web & search tools
+        // ====================================================================
+        "webfetch": "allow",
+        "websearch": "allow",
+        "codesearch": "allow",
+
+        // ====================================================================
+        // Other tools
+        // ====================================================================
+        "todowrite": "allow",
+        "todoread": "allow",
+        "question": "allow",
+        "lsp": "allow",
+        "skill": "allow",
+        "external_directory": "ask"
+      }
+    }
+  }
+}
