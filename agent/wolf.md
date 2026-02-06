@@ -242,6 +242,41 @@ permission:
     "tofu validate*": allow
     "tofu fmt*": allow
 
+    # ── Ephemeral/temp directory cleanup: allow rm in temp paths only ──
+    # macOS system temp directories (cleared on reboot)
+    "rm /tmp/*": allow
+    "rm -r /tmp/*": allow
+    "rm -f /tmp/*": allow
+    "rm -rf /tmp/*": allow
+    "rm -fr /tmp/*": allow
+    "rm /var/tmp/*": allow
+    "rm -r /var/tmp/*": allow
+    "rm -f /var/tmp/*": allow
+    "rm -rf /var/tmp/*": allow
+    "rm -fr /var/tmp/*": allow
+    # macOS per-user temp ($TMPDIR typically resolves here)
+    "rm /var/folders/*": allow
+    "rm -r /var/folders/*": allow
+    "rm -f /var/folders/*": allow
+    "rm -rf /var/folders/*": allow
+    "rm -fr /var/folders/*": allow
+    # Private temp (macOS symlinks /tmp → /private/tmp)
+    "rm /private/tmp/*": allow
+    "rm -r /private/tmp/*": allow
+    "rm -f /private/tmp/*": allow
+    "rm -rf /private/tmp/*": allow
+    "rm -fr /private/tmp/*": allow
+    "rm /private/var/tmp/*": allow
+    "rm -r /private/var/tmp/*": allow
+    "rm -f /private/var/tmp/*": allow
+    "rm -rf /private/var/tmp/*": allow
+    "rm -fr /private/var/tmp/*": allow
+    "rm /private/var/folders/*": allow
+    "rm -r /private/var/folders/*": allow
+    "rm -f /private/var/folders/*": allow
+    "rm -rf /private/var/folders/*": allow
+    "rm -fr /private/var/folders/*": allow
+
     # ── Misc safe read-only tools ──
     "curl *": allow
     "wget *": allow
