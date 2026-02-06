@@ -3,6 +3,7 @@
   "model": "github-copilot/claude-haiku-4.5",
   "small_model": "github-copilot/claude-haiku-4.5",
   "autoupdate": true,
+  "plugin": ["@zenobius/opencode-background"],
   "lsp": {
     "kotlin": {
       "command": ["kotlin-lsp", "--stdio"],
