@@ -2,6 +2,7 @@
   "$schema": "https://opencode.ai/config.json",
   "model": "opencode/kimi-k2.5-free",
   "small_model": "opencode/kimi-k2.5-free",
+  "default_agent": "marsellus",
   "autoupdate": true,
   "plugin": ["opencode-pty", "cc-safety-net", "opencode-notify"],
   "lsp": {
@@ -21,31 +22,7 @@
       }
     },
     "build": {
-      "model": "opencode/kimi-k2.5-free",
-      "prompt": "{file:./prompts/orchestrator.md}",
-      "tools": {
-        "bash": false,
-        "read": true,
-        "edit": false,
-        "write": false,
-        "grep": false,
-        "glob": false,
-        "task": true
-      },
-      "permission": {
-        "bash": {
-          "*": "deny",
-          "git status*": "allow",
-          "git log*": "allow",
-          "git diff*": "allow"
-        },
-        "read": "allow",
-        "task": {
-          "*": "deny",
-          "wolf": "allow",
-          "git": "deny"
-        }
-      }
+      "disable": true
     }
   }
 }
