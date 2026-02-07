@@ -9,9 +9,14 @@ List all plans stored for the current repository.
 
 1. Determine the current repository's org and repo name:
    ```bash
-   git remote -v
+   git remote get-url origin
    ```
-   Parse the origin URL to extract `<org>/<repo>`.
+   Parse the URL to extract `<org>/<repo>`:
+   - Strip any trailing `.git` suffix
+   - **HTTPS** (e.g. `https://github.com/acme-corp/my-app.git`) → org=`acme-corp`, repo=`my-app`
+   - **SSH** (e.g. `git@github.com:acme-corp/my-app.git`) → org=`acme-corp`, repo=`my-app`
+   - **⚠️ The org comes from the remote URL, NOT from `$USER`, `$HOME`, or `whoami`**
+   - **Fallback** (no remote): use `_local` as org and current directory name as repo
 
 2. Check if the plans directory exists:
    ```bash

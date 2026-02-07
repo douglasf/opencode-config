@@ -92,6 +92,7 @@ permission:
     "git stash list *": allow
     "git remote": allow
     "git remote -v": allow
+    "git remote get-url *": allow
     "git tag": allow
     "git tag -l": allow
     "git tag -l *": allow
@@ -283,9 +284,41 @@ You'll receive a prompt containing:
 - **Constraints**: Technology requirements, compatibility needs, deadlines
 - **Scope**: What's in and out of scope
 - **Specific questions**: Anything the caller wants answered during planning
-- **Org/Repo**: The GitHub org and repo name (for plan storage path)
+- **Org/Repo**: The GitHub org and repo name (for plan storage path). **If not provided by the caller, you MUST derive it yourself** (see "Deriving Org/Repo" below).
 
 Parse this carefully. If the request is unclear, make reasonable assumptions and note them in the plan's "Risks & Open Questions" section.
+
+### Step 1.5: Derive Org/Repo (if not provided)
+
+If the caller did not supply org/repo, or if you need to verify them, **always derive from the git remote — never use the local username or home directory path**.
+
+Run:
+```bash
+git remote get-url origin
+```
+
+Parse the URL to extract org and repo:
+
+| URL format | Example | Org | Repo |
+|---|---|---|---|
+| HTTPS | `https://github.com/acme-corp/my-app.git` | `acme-corp` | `my-app` |
+| HTTPS (no .git) | `https://github.com/acme-corp/my-app` | `acme-corp` | `my-app` |
+| SSH | `git@github.com:acme-corp/my-app.git` | `acme-corp` | `my-app` |
+| SSH (no .git) | `git@github.com:acme-corp/my-app` | `acme-corp` | `my-app` |
+
+**Parsing rules:**
+1. Strip any trailing `.git` suffix
+2. Extract the **last two path segments** — the first is the org, the second is the repo
+   - For HTTPS: split on `/` after `github.com/`
+   - For SSH: split on `:` then `/` after `github.com:`
+3. The org is the **GitHub organization or username that owns the repo**, NOT your local machine username
+
+**⚠️ CRITICAL**: The org comes from the **remote URL**, not from `$HOME`, `$USER`, `whoami`, or any local filesystem path. If the remote URL is `git@github.com:my-company/my-project.git`, the org is `my-company` — even if you're running on `/Users/john.doe/`.
+
+**Fallback** — if `git remote get-url origin` fails (no remote configured):
+- Use `_local` as the org
+- Use the current directory name as the repo
+- Path becomes: `~/.opencode/plans/_local/<directory-name>/`
 
 ### Step 2: Investigate
 
