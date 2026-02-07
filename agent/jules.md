@@ -8,8 +8,8 @@ model: opencode/kimi-k2.5-free
 tools:
   bash: true
   read: true
-  edit: true
-  write: true
+  edit: false
+  write: false
   grep: false
   glob: false
   task: true
