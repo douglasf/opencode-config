@@ -4,12 +4,15 @@ Personal OpenCode setup with custom agents, commands, and plugins. Lives at `~/.
 
 ## Good Usage
 
-This config uses a **multi-agent architecture**. When you type in OpenCode, you're talking to the **orchestrator** — it never does work itself. Instead, it delegates to specialized agents: **wolf** (reads, writes, searches, runs commands — all the actual work), **git** (commits, pushes, PRs — only via slash commands), and **quick-answer** (fast, concise responses with no deep investigation). The orchestrator breaks your request into subtasks, dispatches them to wolf (in parallel when possible), and synthesizes the results.
+This config uses a **multi-agent architecture**. When you type in OpenCode, you're talking to the **orchestrator** (Marsellus) — it never does work itself. Instead, it delegates to specialized agents: **Wolf** (reads, writes, searches, runs commands — all the actual work), **git** (commits, pushes, PRs — only via slash commands), and **quick-answer** (fast, concise responses with no deep investigation). The orchestrator breaks your request into subtasks, dispatches them to Wolf (in parallel when possible), and synthesizes the results.
+
+You can also switch to the **Jules** agent (via tab) when you want to think through a feature or design before building. Jules helps you create structured plans, delegates technical analysis to Vincent, and hands off implementation to Wolf when you're ready.
 
 ### Day-to-Day Workflow
 
 - **Ask a question or request a change** — just type naturally. The orchestrator will delegate to wolf, which investigates and executes autonomously. You don't need to manage the agents yourself.
 - **Quick lookups** — use `/quick how do I do X` for fast, direct answers without the full investigation cycle. Great for syntax reminders, port numbers, or quick factual questions.
+- **Planning** — switch to the **Jules** tab when you need to think through something bigger: a new feature, architectural change, or multi-step refactor. Describe what you want and Jules will guide you through a structured planning process, producing a plan document you can implement later.
 - **Code changes** — describe what you want changed and where. Wolf will read the relevant files, make edits, and run tests if appropriate. Review the changes before committing.
 - **Committing** — the orchestrator will *never* commit on its own. When you're happy with the changes, use `/commit` to stage and commit with an auto-generated message. Use `/push` and `/pr` for the rest of the git workflow.
 - **Code review** — use `/review` to get a review of your staged or unstaged changes before committing.
@@ -111,6 +114,9 @@ The repo immediately falls back to strict global defaults.
 
 ## Agents
 
+- **marsellus** (default) — The orchestrator. Delegates everything to wolf. Never does work itself.
+- **jules** (Jules) — The thinking partner. Switch to this tab when you need to design before you build. Creates structured plans, delegates analysis to Vincent, hands off implementation to Wolf.
+- **vincent** — The investigator. Deep codebase analyst powered by Claude Opus. Read-only — explores code, traces dependencies, and returns structured findings. Jules' research arm.
 - **wolf** — The executor. Reads, writes, searches, runs commands. Does all the actual work.
 - **git** — Handles commits, pushes, and PRs. Only invoked via slash commands.
 - **quick-answer** — Fast, concise answers without deep investigation.
@@ -122,3 +128,10 @@ The repo immediately falls back to strict global defaults.
 - `/pr` — Create a pull request
 - `/review` — Code review of staged/unstaged changes
 - `/quick` — Quick answer mode
+- `/plan-list` — List all plans for the current repo
+- `/plan-implement <plan-name>` — Implement a plan step by step (delegates to Wolf)
+- `/plan-update <plan-name>` — Load a plan and update it through conversation
+
+## Plan Storage
+
+Plans are stored at `~/.opencode/plans/<org>/<repo>/` as markdown files. The org/repo is derived from the git remote origin URL. Use `/plan-list` to see plans for the current repo.
