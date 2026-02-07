@@ -13,9 +13,16 @@ Load a plan and implement it step by step, delegating each step to Wolf.
 
 1. **Resolve the plan file path:**
    ```bash
-   git remote -v
+   git remote get-url origin
    ```
-   Parse origin to get `<org>/<repo>`, then read:
+   Parse the URL to extract `<org>/<repo>`:
+   - Strip any trailing `.git` suffix
+   - **HTTPS** (e.g. `https://github.com/acme-corp/my-app.git`) → org=`acme-corp`, repo=`my-app`
+   - **SSH** (e.g. `git@github.com:acme-corp/my-app.git`) → org=`acme-corp`, repo=`my-app`
+   - **⚠️ The org comes from the remote URL, NOT from `$USER`, `$HOME`, or `whoami`**
+   - **Fallback** (no remote): use `_local` as org and current directory name as repo
+   
+   Then read:
    ```
    ~/.opencode/plans/<org>/<repo>/$1.md
    ```
