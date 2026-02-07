@@ -24,9 +24,30 @@
 
   "$schema": "https://opencode.ai/config.json",
 
+  // ======================================================================
+  // Model configuration - prevent inheriting haiku from main config
+  // ======================================================================
+  // Coordination agents use kimi-k2.5-free (fast, free)
+  // Heavy-lifting agents stay on opus (set explicitly per-agent below)
+  "model": "opencode/kimi-k2.5-free",
+  "small_model": "opencode/kimi-k2.5-free",
+
   "agent": {
     // ======================================================================
-    // WOLF (executor) - YOLO mode relaxations live HERE
+    // COORDINATION AGENTS - kimi-k2.5-free (fast, free routing/delegation)
+    // ======================================================================
+    "marsellus": {
+      "model": "opencode/kimi-k2.5-free"
+    },
+    "jules": {
+      "model": "opencode/kimi-k2.5-free"
+    },
+    "quick-answer": {
+      "model": "opencode/kimi-k2.5-free"
+    },
+
+    // ======================================================================
+    // HEAVY-LIFTING AGENTS - opus (deep analysis, code writing, investigation)
     // ======================================================================
     // The wolf is the only agent that gets relaxed permissions in YOLO mode.
     // It does all the actual work: running commands, editing files, etc.
@@ -43,6 +64,7 @@
     //   - Cloud CLI mutations: aws/gcloud/az destructive commands
     // ======================================================================
     "wolf": {
+      "model": "github-copilot/claude-opus-4.6",
       "permission": {
         // ====================================================================
         // File operations - allow freely within the project
@@ -496,6 +518,15 @@
         "skill": "allow",
         "external_directory": "ask"
       }
+    },
+    "vincent": {
+      "model": "github-copilot/claude-opus-4.6"
+    },
+    "architect": {
+      "model": "github-copilot/claude-opus-4.6"
+    },
+    "git": {
+      "model": "github-copilot/claude-opus-4.6"
     }
   }
 }
