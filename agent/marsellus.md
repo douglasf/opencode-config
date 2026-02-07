@@ -7,7 +7,7 @@ mode: primary
 model: opencode/kimi-k2.5-free
 tools:
   bash: false
-  read: true
+  read: false
   edit: false
   write: false
   grep: false
