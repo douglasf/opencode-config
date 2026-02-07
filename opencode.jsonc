@@ -12,16 +12,10 @@
     }
   },
   "agent": {
-    "plan": {
-      "model": "opencode/kimi-k2.5-free",
-      "tools": {
-        "read": true,
-        "glob": true,
-        "grep": true,
-        "list": true
-      }
-    },
     "build": {
+      "disable": true
+    },
+    "plan": {
       "disable": true
     }
   }
