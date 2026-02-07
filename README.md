@@ -34,8 +34,7 @@ By default, **strict mode** is active everywhere — the AI cannot run arbitrary
 ~/.config/opencode/
   opencode.jsonc          # Global config (strict mode — default)
   opencode-yolo.jsonc     # Relaxed config (YOLO mode — opt-in per repo)
-  prompts/                # System prompts (orchestrator)
-  agent/                  # Agent definitions (wolf, architect, vincent, git, quick-answer, jules)
+  agents/                 # Agent definitions (marsellus.md, wolf.md, vincent.md, jules.md, architect.md, git.md, quick-answer.md)
   command/                # Slash commands (/commit, /push, /pr, /review, /quick)
   plugins/                # Custom plugins (copilot-usage)
   docs/                   # Design docs and analysis
