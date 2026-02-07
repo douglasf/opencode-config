@@ -24,7 +24,6 @@ permission:
 
     # ── GitHub CLI: PR operations ──
     "gh pr create*": allow
-    "gh pr merge*": allow
     "gh pr view*": allow
     "gh pr diff*": allow
     "gh pr list*": allow
