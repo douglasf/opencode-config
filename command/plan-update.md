@@ -36,12 +36,12 @@ Load an existing plan and start a conversation about what needs updating.
    - Revising the design based on what was learned during implementation
    - Adding risks or open questions that surfaced
 
-5. **If the update requires new analysis** (e.g., "we need to handle a new edge case" or "the API changed"), delegate to Vincent:
+5. **If the update requires new analysis** (e.g., "we need to handle a new edge case" or "the API changed"), delegate to the Architect:
    ```
    Task(
-     subagent_type: "explore",
-     description: "Investigate <topic> for plan update",
-     prompt: "<detailed analysis request>"
+     subagent_type: "architect",
+     description: "Update plan <plan-name>",
+     prompt: "Update the existing plan at ~/.opencode/plans/<org>/<repo>/<plan-name>.md:\n\n## Changes Requested\n- <specific changes>\n\n## Additional Context\n<new information>\n\nRead the existing plan, investigate any new areas needed, make the updates, save back to disk, and return update metadata."
    )
    ```
 

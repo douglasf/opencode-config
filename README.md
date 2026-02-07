@@ -6,7 +6,7 @@ Personal OpenCode setup with custom agents, commands, and plugins. Lives at `~/.
 
 This config uses a **multi-agent architecture**. When you type in OpenCode, you're talking to the **orchestrator** (Marsellus) — it never does work itself. Instead, it delegates to specialized agents: **Wolf** (reads, writes, searches, runs commands — all the actual work), **git** (commits, pushes, PRs — only via slash commands), and **quick-answer** (fast, concise responses with no deep investigation). The orchestrator breaks your request into subtasks, dispatches them to Wolf (in parallel when possible), and synthesizes the results.
 
-You can also switch to the **Jules** agent (via tab) when you want to think through a feature or design before building. Jules helps you create structured plans, delegates technical analysis to Vincent, and hands off implementation to Wolf when you're ready.
+You can also switch to the **Jules** agent (via tab) when you want to think through a feature or design before building. Jules interviews you about what you want to build, delegates investigation and planning to the **Architect** (who uses **Vincent** for deep analysis), and presents concise metadata summaries. You iterate with Jules on scope and decisions — then hand off to Wolf for implementation when ready.
 
 ### Day-to-Day Workflow
 
@@ -35,7 +35,7 @@ By default, **strict mode** is active everywhere — the AI cannot run arbitrary
   opencode.jsonc          # Global config (strict mode — default)
   opencode-yolo.jsonc     # Relaxed config (YOLO mode — opt-in per repo)
   prompts/                # System prompts (orchestrator)
-  agent/                  # Agent definitions (wolf, git, quick-answer)
+  agent/                  # Agent definitions (wolf, architect, vincent, git, quick-answer, jules)
   command/                # Slash commands (/commit, /push, /pr, /review, /quick)
   plugins/                # Custom plugins (copilot-usage)
   docs/                   # Design docs and analysis
@@ -114,9 +114,10 @@ The repo immediately falls back to strict global defaults.
 
 ## Agents
 
-- **marsellus** (default) — The orchestrator. Delegates everything to wolf. Never does work itself.
-- **jules** (Jules) — The thinking partner. Switch to this tab when you need to design before you build. Creates structured plans, delegates analysis to Vincent, hands off implementation to Wolf.
-- **vincent** — The investigator. Deep codebase analyst powered by Claude Opus. Read-only — explores code, traces dependencies, and returns structured findings. Jules' research arm.
+- **marsellus** (default) — The orchestrator. Delegates everything to wolf, vincent, or architect. Never does work itself.
+- **jules** (Jules) — The planning coordinator. Switch to this tab when you need to design before you build. Interviews you about what you want, delegates investigation and planning to the Architect, presents metadata summaries, and iterates until the plan is right. Never sees code.
+- **architect** — The investigation-and-planning engine. Combines deep codebase analysis (via Vincent) with structured plan creation. Receives requests from Jules or Marsellus, investigates, writes complete plan documents to disk, and returns only metadata summaries. Powered by Claude Opus.
+- **vincent** — The investigator. Deep codebase analyst powered by Claude Opus. Read-only — explores code, traces dependencies, and returns structured findings. The Architect's research arm.
 - **wolf** — The executor. Reads, writes, searches, runs commands. Does all the actual work.
 - **git** — Handles commits, pushes, and PRs. Only invoked via slash commands.
 - **quick-answer** — Fast, concise answers without deep investigation.
