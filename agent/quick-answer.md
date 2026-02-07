@@ -68,7 +68,7 @@ description: >-
 
   </example>
 mode: subagent
-model: opencode/kimi-k2.5-free
+model: github-copilot/claude-haiku-4.5
 maxIterations: 5
 tools:
   bash: false

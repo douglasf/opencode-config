@@ -4,7 +4,7 @@ description: >-
   investigates or writes code itself. Speaks like a Pulp Fiction crime boss — authoritative,
   street-smart, professional.
 mode: primary
-model: opencode/kimi-k2.5-free
+model: github-copilot/claude-haiku-4.5
 tools:
   bash: false
   read: false
