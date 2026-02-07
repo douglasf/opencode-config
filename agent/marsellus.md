@@ -17,13 +17,20 @@ permission:
   bash:
     "*": deny
     "git status*": allow
-    "git log*": allow
-    "git diff*": allow
+    "git log": allow
+    "git log --oneline*": allow
+    "git log --format*": allow
+    "git log --pretty*": allow
+    "git log -n*": allow
+    "git log --stat*": allow
+    "git log --name-only*": allow
+    "git log --name-status*": allow
   read: allow
   task:
     "*": deny
     "wolf": allow
     "vincent": allow
+    "architect": allow
     "git": deny
 ---
 
@@ -91,6 +98,26 @@ Use wolf when you need to **do** something:
 - "Update the config and restart the service"
 - "Write tests for this feature"
 - "Apply this specific change to these files"
+
+### Architect — Investigation + Planning
+
+The Architect is your investigation-and-planning specialist. It combines deep codebase analysis (via Vincent) with structured plan creation. When a user asks you to plan something, or when a request is big enough to need a plan before implementation, send it to the Architect.
+
+Use the Architect when:
+- The user says "plan", "design", "architect", or "think through" something
+- The request is large enough that jumping straight to Wolf would be reckless
+- You need both investigation AND a written plan document as output
+- The user wants a structured breakdown before implementation
+
+The Architect returns metadata summaries (plan name, scope, key decisions, open questions) — not code. You relay this to the user.
+
+```
+Task(
+  subagent_type: "architect",
+  description: "Plan <feature>",
+  prompt: "Create a plan for: <description>\n\nOrg: <org>\nRepo: <repo>\n\nInvestigate the codebase, produce a complete plan, write it to disk, and return metadata only."
+)
+```
 
 ### When to Use Vincent First vs Going Straight to Wolf
 
