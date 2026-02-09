@@ -1,6 +1,6 @@
 ---
 description: Implement a plan by delegating steps to Wolf
-agent: jules
+agent: marsellus
 ---
 
 Load a plan and implement it step by step, delegating each step to Wolf.
@@ -12,19 +12,11 @@ Load a plan and implement it step by step, delegating each step to Wolf.
 ## Process
 
 1. **Resolve the plan file path:**
-   ```bash
-   git remote get-url origin
-   ```
-   Parse the URL to extract `<org>/<repo>`:
-   - Strip any trailing `.git` suffix
-   - **HTTPS** (e.g. `https://github.com/acme-corp/my-app.git`) → org=`acme-corp`, repo=`my-app`
-   - **SSH** (e.g. `git@github.com:acme-corp/my-app.git`) → org=`acme-corp`, repo=`my-app`
-   - **⚠️ The org comes from the remote URL, NOT from `$USER`, `$HOME`, or `whoami`**
-   - **Fallback** (no remote): use `_local` as org and current directory name as repo
+   The plan lives at `.opencode/plans/$1.md` (relative to repo root).
    
-   Then read:
+   Read:
    ```
-   ~/.opencode/plans/<org>/<repo>/$1.md
+   .opencode/plans/$1.md
    ```
 
 2. **If the plan doesn't exist**, list available plans and tell the user:

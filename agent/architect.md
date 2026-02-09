@@ -5,7 +5,7 @@ description: >-
   complete plan documents. Returns only metadata summaries to the parent agent.
 mode: subagent
 model: github-copilot/claude-opus-4.6
-maxIterations: 75
+steps: 75
 tools:
   bash: true
   read: true
@@ -17,247 +17,34 @@ tools:
   webfetch: true
 permission:
   bash:
-    # ═══════════════════════════════════════════════════════════
-    # DEFAULT-DENY: Investigation + plan file operations only.
-    # ═══════════════════════════════════════════════════════════
     "*": deny
-
-    # ── Plan storage operations ──
-    "mkdir *": allow
+    "pwd": allow
     "ls": allow
     "ls *": allow
-    "cat *": allow
     "find *": allow
-    "rm */.opencode/plans/*": allow
-
-    # ── Filesystem exploration (read-only) ──
-    "pwd": allow
+    "cat *": allow
     "head *": allow
     "tail *": allow
     "wc *": allow
-    "sort *": allow
-    "uniq *": allow
-    "diff *": allow
-    "file *": allow
-    "stat *": allow
-    "basename *": allow
-    "dirname *": allow
-    "realpath *": allow
-    "tree": allow
-    "tree *": allow
-    "which *": allow
-    "env": allow
-    "printenv": allow
-    "printenv *": allow
-
-    # ── Content search & text processing ──
     "grep *": allow
-    "rg *": allow
-    "awk *": allow
-    "sed -n *": allow
-    "cut *": allow
-    "tr *": allow
-    "paste *": allow
-    "xargs *": allow
-    "jq *": allow
-    "yq *": allow
-
-    # ── Git: read-only (understand repo structure and history) ──
     "git status": allow
     "git status *": allow
     "git log": allow
     "git log *": allow
     "git diff": allow
     "git diff *": allow
-    "git branch": allow
-    "git branch -a": allow
-    "git branch -r": allow
-    "git branch -v": allow
-    "git branch -vv": allow
-    "git branch --list": allow
-    "git branch --list *": allow
     "git show": allow
     "git show *": allow
-    "git blame": allow
-    "git blame *": allow
-    "git ls-files": allow
-    "git ls-files *": allow
-    "git rev-parse": allow
-    "git rev-parse *": allow
-    "git describe": allow
-    "git describe *": allow
-    "git shortlog": allow
-    "git shortlog *": allow
-    "git stash list": allow
-    "git stash list *": allow
-    "git remote": allow
-    "git remote -v": allow
-    "git remote get-url *": allow
-    "git tag": allow
-    "git tag -l": allow
-    "git tag -l *": allow
-    "git tag --list": allow
-    "git tag --list *": allow
-    "git reflog": allow
-    "git reflog *": allow
-
-    # ── GitHub CLI: read-only ──
-    "gh issue view *": allow
-    "gh issue list *": allow
-    "gh pr view *": allow
-    "gh pr diff *": allow
-    "gh pr list *": allow
-    "gh pr status*": allow
-    "gh pr checks *": allow
-    "gh pr checks": allow
-    "gh repo view *": allow
-    "gh api */pulls/*": allow
-    "gh api */issues/*": allow
-    "gh auth status*": allow
-
-    # ── GitHub Actions / CI: read-only ──
-    "gh run list*": allow
-    "gh run view*": allow
-    "gh workflow list*": allow
-    "gh workflow view*": allow
-    "gh api */actions/runs*": allow
-    "gh api */actions/runs/*": allow
-    "gh api */actions/jobs/*": allow
-    "gh api */actions/workflows*": allow
-    "gh api */actions/workflows/*": allow
-    "gh api */check-runs*": allow
-    "gh api */check-suites*": allow
-
-    # ── Package introspection (read-only) ──
-    "npm ls": allow
-    "npm ls *": allow
-    "npm outdated*": allow
-    "npm explain *": allow
-    "npm why *": allow
-    "pip list*": allow
-    "pip show *": allow
-    "pip freeze*": allow
-    "go list*": allow
-    "go version*": allow
-    "go env*": allow
-    "cargo tree*": allow
-
-    # ── Misc safe read-only tools ──
-    "curl -s *": allow
-    "curl --silent *": allow
-    "dig *": allow
-    "nslookup *": allow
-
-    # ═══════════════════════════════════════════════════════════
-    # EXPLICIT DENY — defense-in-depth
-    # ═══════════════════════════════════════════════════════════
-
-    # ── ALL git mutations ──
-    "git add*": deny
-    "git commit*": deny
-    "git push*": deny
-    "git pull*": deny
-    "git merge*": deny
-    "git rebase*": deny
-    "git reset*": deny
-    "git checkout*": deny
-    "git switch*": deny
-    "git restore*": deny
-    "git cherry-pick*": deny
-    "git revert*": deny
-    "git stash": deny
-    "git stash *": deny
-    "git clean*": deny
-    "git rm*": deny
-    "git mv*": deny
-    "git tag -a*": deny
-    "git tag -d*": deny
-    "git tag -f*": deny
-    "git branch -d*": deny
-    "git branch -D*": deny
-    "git branch -m*": deny
-    "git branch -M*": deny
-    "git fetch*": deny
-    "git clone*": deny
-    "git init*": deny
-    "git config*": deny
-
-    # ── ALL GitHub CLI mutations ──
-    "gh pr create*": deny
-    "gh pr merge*": deny
-    "gh pr close*": deny
-    "gh pr edit*": deny
-    "gh pr comment*": deny
-    "gh pr review*": deny
-    "gh issue create*": deny
-    "gh issue close*": deny
-    "gh issue edit*": deny
-    "gh issue comment*": deny
-    "gh repo create*": deny
-    "gh repo delete*": deny
-    "gh release *": deny
-    "gh secret *": deny
-    "gh variable *": deny
-    "gh run cancel*": deny
-    "gh run rerun*": deny
-    "gh workflow run*": deny
-
-    # ── GitHub API mutations ──
-    "gh api -X POST*": deny
-    "gh api -X PUT*": deny
-    "gh api -X DELETE*": deny
-    "gh api -X PATCH*": deny
-    "gh api --method POST*": deny
-    "gh api --method PUT*": deny
-    "gh api --method DELETE*": deny
-    "gh api --method PATCH*": deny
-
-    # ── Build / write commands ──
-    "npm install*": deny
-    "npm ci*": deny
-    "npm run*": deny
-    "npm publish*": deny
-    "yarn *": deny
-    "pnpm *": deny
-    "pip install*": deny
-    "pip3 install*": deny
-    "go build*": deny
-    "go run*": deny
-    "go install*": deny
-    "cargo build*": deny
-    "cargo run*": deny
-    "make": deny
-    "make *": deny
-    "cmake *": deny
-
-    # ── Dangerous system operations ──
-    "sudo *": deny
-    "su *": deny
-    "rm *": deny
-    "mv *": deny
-    "cp *": deny
-    "chmod *": deny
-    "chown *": deny
-    "docker *": deny
-    "kubectl *": deny
-    "ssh *": deny
-    "scp *": deny
-    "open *": deny
-    "python *": deny
-    "python3 *": deny
-    "node *": deny
-    "npx *": deny
-    "sed -i*": deny
-    "sed --in-place*": deny
-
+  external_directory: deny
   read: allow
-  write: allow
-  edit: allow
+  edit:
+    # Architect can ONLY modify files inside the repo-local plans directory.
+    ".opencode/plans/*": allow
+    ".opencode/plans/**/*": allow
   glob: allow
   grep: allow
   webfetch: allow
   task:
-    "*": deny
     "vincent": allow
     "general": allow
     "git": deny
@@ -284,41 +71,8 @@ You'll receive a prompt containing:
 - **Constraints**: Technology requirements, compatibility needs, deadlines
 - **Scope**: What's in and out of scope
 - **Specific questions**: Anything the caller wants answered during planning
-- **Org/Repo**: The GitHub org and repo name (for plan storage path). **If not provided by the caller, you MUST derive it yourself** (see "Deriving Org/Repo" below).
 
 Parse this carefully. If the request is unclear, make reasonable assumptions and note them in the plan's "Risks & Open Questions" section.
-
-### Step 1.5: Derive Org/Repo (if not provided)
-
-If the caller did not supply org/repo, or if you need to verify them, **always derive from the git remote — never use the local username or home directory path**.
-
-Run:
-```bash
-git remote get-url origin
-```
-
-Parse the URL to extract org and repo:
-
-| URL format | Example | Org | Repo |
-|---|---|---|---|
-| HTTPS | `https://github.com/acme-corp/my-app.git` | `acme-corp` | `my-app` |
-| HTTPS (no .git) | `https://github.com/acme-corp/my-app` | `acme-corp` | `my-app` |
-| SSH | `git@github.com:acme-corp/my-app.git` | `acme-corp` | `my-app` |
-| SSH (no .git) | `git@github.com:acme-corp/my-app` | `acme-corp` | `my-app` |
-
-**Parsing rules:**
-1. Strip any trailing `.git` suffix
-2. Extract the **last two path segments** — the first is the org, the second is the repo
-   - For HTTPS: split on `/` after `github.com/`
-   - For SSH: split on `:` then `/` after `github.com:`
-3. The org is the **GitHub organization or username that owns the repo**, NOT your local machine username
-
-**⚠️ CRITICAL**: The org comes from the **remote URL**, not from `$HOME`, `$USER`, `whoami`, or any local filesystem path. If the remote URL is `git@github.com:my-company/my-project.git`, the org is `my-company` — even if you're running on `/Users/john.doe/`.
-
-**Fallback** — if `git remote get-url origin` fails (no remote configured):
-- Use `_local` as the org
-- Use the current directory name as the repo
-- Path becomes: `~/.opencode/plans/_local/<directory-name>/`
 
 ### Step 2: Investigate
 
@@ -352,12 +106,13 @@ You can run multiple Vincent tasks in parallel for independent investigation are
 
 After gathering findings, produce a complete plan document using the template below. Write it to disk at the correct path.
 
-**Plan storage path:** `~/.opencode/plans/<org>/<repo>/<plan-name>.md`
+The Write tool automatically creates intermediate directories, so you do not need to create them manually. Simply write the plan file directly:
 
-Create the directory if it doesn't exist:
-```bash
-mkdir -p ~/.opencode/plans/<org>/<repo>
-```
+**Plan storage path:** `.opencode/plans/<plan-name>.md`
+
+Plans are stored in the repo root under `.opencode/plans/`. This keeps plans project-scoped and avoids any external directory permission issues.
+
+> **Note:** Always use the **Write** tool to create plan files. The Write tool creates parent directories automatically.
 
 **File naming:** `<plan-name>.md` — kebab-case slug derived from the plan title. Example: "Add SSO Authentication" → `add-sso-authentication.md`
 
@@ -370,7 +125,7 @@ After writing the plan, return a **concise metadata summary** to your caller. Th
 ## Plan Created
 
 - **Name**: <plan-name>
-- **Path**: ~/.opencode/plans/<org>/<repo>/<plan-name>.md
+- **Path**: .opencode/plans/<plan-name>.md
 - **Status**: draft
 - **Scope**: <one-line summary>
 - **Sections**: <count> sections, <approximate word count> words
