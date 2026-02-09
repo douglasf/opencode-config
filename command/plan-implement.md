@@ -26,33 +26,46 @@ Load a plan and implement it step by step, delegating each step to Wolf.
 
 4. **Update the plan status** to `in-progress` and save it back to disk.
 
-5. **Execute each step sequentially** by delegating to Wolf:
+5. **Analyze step dependencies and execute in parallel where possible:**
 
-   For each step in the implementation plan:
+   Before executing, analyze the implementation steps for dependencies:
+   - Can any steps run independently of others? (no shared file changes, no output dependency)
+   - Group independent steps together
+   - Identify sequential chains (step B depends on A's output)
    
-   a. Tell the user which step you're starting:
-      "Starting Step N: <description>"
+   Execute in this order:
+   - All parallel groups run simultaneously via Task() calls in a single message
+   - Sequential chains execute after their dependencies complete
+   - Report progress to the user after each group completes
    
-   b. Delegate to Wolf with full context:
-      ```
-      Task(
-        subagent_type: "wolf",
-        description: "Plan step N: <short desc>",
-        prompt: "You are implementing step N of a plan. Here is the full plan for context:\n\n<full plan content>\n\nYour task is STEP N:\n<step details>\n\nImplement this step. The previous steps have already been completed."
-      )
-      ```
+   For each group:
+   a. Tell the user which steps are starting (and if parallel, note "running in parallel")
+   b. Delegate to Wolf via Task() — if multiple independent steps, emit multiple Task() calls simultaneously
+   c. Wait for all tasks in the group to complete
+   d. Report results
+   e. Ask if they want to continue or review
    
-   c. Report Wolf's results to the user
-   
-   d. Ask if they want to continue to the next step or pause:
-      "Step N complete. Continue to Step N+1, or want to review first?"
+   Example format for parallel execution:
+   ```
+   Task(
+     subagent_type: "wolf",
+     description: "Plan step 1: <desc>",
+     prompt: "Implement step 1..."
+   )
+   Task(
+     subagent_type: "wolf", 
+     description: "Plan step 3: <desc>",
+     prompt: "Implement step 3..."
+   )
+   ```
+   (Steps 2 and 4 would queue after steps 1 and 3 complete, if they depend on them)
 
 6. **After all steps are complete**, update the plan status to `completed` and save.
 
 ## Important
 
 - Always give Wolf the FULL plan as context, not just the current step — Wolf needs to understand the bigger picture
-- Execute steps IN ORDER — they may have dependencies
+- Analyze each step for dependencies — execute independent steps in parallel, sequence only when there's a real dependency
 - If a step fails, stop and report the failure. Don't continue blindly.
 - After each step, give the user a chance to review before continuing
 - The user can always say "skip" to move to the next step or "stop" to pause implementation
