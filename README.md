@@ -134,4 +134,4 @@ The repo immediately falls back to strict global defaults.
 
 ## Plan Storage
 
-Plans are stored at `~/.opencode/plans/<org>/<repo>/` as markdown files. The org/repo is derived from the git remote origin URL. Use `/plan-list` to see plans for the current repo.
+Plans are stored at `.opencode/plans/` in the repo root as markdown files. Plans are project-scoped — each repo has its own plan directory. Use `/plan-list` to see plans for the current repo.

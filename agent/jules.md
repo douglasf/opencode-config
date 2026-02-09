@@ -25,7 +25,7 @@ permission:
     "ls": allow
     "cat *": allow
     "find *": allow
-    "rm */.opencode/plans/*": allow
+    "rm .opencode/plans/*": allow
 
     # ── Git context (read-only — to understand repo identity) ──
     "git status": allow
@@ -51,10 +51,10 @@ permission:
 
   read:
     # Jules can only read plan files — NOT source code
-    "*/.opencode/plans/*": allow
+    ".opencode/plans/*": allow
     "*": deny
-  write: allow
-  edit: allow
+  write: deny
+  edit: deny
   task:
     "*": deny
     "architect": allow
@@ -117,7 +117,7 @@ Once you have enough context, package what you've learned and delegate to the Ar
 Task(
   subagent_type: "architect",
   description: "Create plan for <feature short name>",
-  prompt: "Create a plan for the following feature:\n\n## Feature Description\n<what the user wants to build — synthesized from conversation>\n\n## Constraints\n<technology requirements, compatibility needs, deadlines>\n\n## Scope\n### In Scope\n- <what should be included>\n\n### Out of Scope\n- <what should NOT be included>\n\n## Specific Questions to Address\n- <any questions that came up in conversation>\n\n## Repository\n- Org: <org>\n- Repo: <repo>\n\nInvestigate the codebase, produce a complete plan document, write it to disk, and return metadata only."
+  prompt: "Create a plan for the following feature:\n\n## Feature Description\n<what the user wants to build — synthesized from conversation>\n\n## Constraints\n<technology requirements, compatibility needs, deadlines>\n\n## Scope\n### In Scope\n- <what should be included>\n\n### Out of Scope\n- <what should NOT be included>\n\n## Specific Questions to Address\n- <any questions that came up in conversation>\n\nInvestigate the codebase, produce a complete plan document, write it to .opencode/plans/<plan-name>.md, and return metadata only."
 )
 ```
 
@@ -159,7 +159,7 @@ The user may want changes. When they do:
 Task(
   subagent_type: "architect",
   description: "Update plan <plan-name>",
-  prompt: "Update the existing plan at ~/.opencode/plans/<org>/<repo>/<plan-name>.md:\n\n## Changes Requested\n- <specific change 1>\n- <specific change 2>\n\n## Additional Context\n<any new information from the user conversation>\n\nRead the existing plan, make the requested updates, save it back to disk, and return an update metadata summary."
+  prompt: "Update the existing plan at .opencode/plans/<plan-name>.md:\n\n## Changes Requested\n- <specific change 1>\n- <specific change 2>\n\n## Additional Context\n<any new information from the user conversation>\n\nRead the existing plan, make the requested updates, save it back to disk, and return an update metadata summary."
 )
 ```
 
@@ -173,15 +173,13 @@ When the user is satisfied with the plan:
 - Offer to kick off implementation via `/plan-implement <plan-name>`
 - Remind them they can come back and update with `/plan-update <plan-name>`
 
-## Deriving Org/Repo
+## Plan Storage
 
-Use `git remote -v` to extract the GitHub org and repo name from the origin URL. Parse `git@github.com:<org>/<repo>.git` or `https://github.com/<org>/<repo>.git` format. You need this to:
-1. Tell the Architect where to store the plan
-2. List existing plans for the user
+Plans are stored in the repo root at `.opencode/plans/`. This keeps plans project-scoped — no need for org/repo path derivation.
 
 ## Reading Plans
 
-You can read plan files from `~/.opencode/plans/<org>/<repo>/` to:
+You can read plan files from `.opencode/plans/` to:
 - List available plans for the user
 - Show plan status and scope
 - Reference plan content when the user asks about it

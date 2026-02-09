@@ -1,64 +1,45 @@
 ---
-description: Load a plan and update it through conversation
+description: Update an existing plan through the Architect
 agent: jules
 ---
 
-Load an existing plan and start a conversation about what needs updating.
+Update an existing plan by gathering user intent, then delegating all work to the Architect.
 
-## Arguments
+## Step 1 — Gather Intent
 
-- First argument: $1 (plan name — required, kebab-case slug e.g. "add-sso-auth")
+Check whether a plan name was provided as a command argument (`$1`):
 
-## Process
+- **If `$1` is provided** (e.g. the user ran `/plan-update import-from-url`):
+  Use `$1` as the plan name. Do NOT ask for the plan name — skip straight to the next question.
 
-1. **Resolve the plan file path:**
-   ```bash
-   git remote get-url origin
-   ```
-   Parse the URL to extract `<org>/<repo>`:
-   - Strip any trailing `.git` suffix
-   - **HTTPS** (e.g. `https://github.com/acme-corp/my-app.git`) → org=`acme-corp`, repo=`my-app`
-   - **SSH** (e.g. `git@github.com:acme-corp/my-app.git`) → org=`acme-corp`, repo=`my-app`
-   - **⚠️ The org comes from the remote URL, NOT from `$USER`, `$HOME`, or `whoami`**
-   - **Fallback** (no remote): use `_local` as org and current directory name as repo
-   
-   Then read:
-   ```
-   ~/.opencode/plans/<org>/<repo>/$1.md
-   ```
+- **If `$1` is empty or not provided** (e.g. the user ran `/plan-update` with no arguments):
+  Ask: **"What plan do you want to update?"**
+  — They should provide the plan name (kebab-case slug, e.g. `add-sso-auth`), and optionally `org/repo` if it's not obvious from the current project context.
 
-2. **If the plan doesn't exist**, list available plans and tell the user:
-   "No plan named '$1' found. Here are the available plans for this repo: ..."
+Then, regardless of how the plan name was determined, ask:
 
-3. **If the plan exists**, read it and present a summary to the user:
-   - Plan title and current status
-   - Brief overview of each section (one line per section)
-   - Then ask: "What needs updating?"
+**"What changes or updates do you want to make?"**
+— Examples: adjusting scope, changing approach, adding steps, updating status, revising design, adding risks/open questions.
 
-4. **Enter conversational update mode.** The user will tell you what they want to change. This could be:
-   - Adjusting scope (adding/removing goals or non-goals)
-   - Changing the approach based on new information
-   - Adding implementation steps
-   - Updating status
-   - Revising the design based on what was learned during implementation
-   - Adding risks or open questions that surfaced
+Wait for their response before proceeding.
 
-5. **If the update requires new analysis** (e.g., "we need to handle a new edge case" or "the API changed"), delegate to the Architect:
-   ```
-   Task(
-     subagent_type: "architect",
-     description: "Update plan <plan-name>",
-     prompt: "Update the existing plan at ~/.opencode/plans/<org>/<repo>/<plan-name>.md:\n\n## Changes Requested\n- <specific changes>\n\n## Additional Context\n<new information>\n\nRead the existing plan, investigate any new areas needed, make the updates, save back to disk, and return update metadata."
-   )
-   ```
+## Step 2 — Delegate to Architect
 
-6. **After discussing changes**, update the plan document and save it back to disk. Update the `Updated` date in the frontmatter.
+Once you have the plan name and the requested changes, do the following yourself (you ARE the Architect):
 
-7. **Show the user what changed** — present a before/after summary of the sections that were modified.
+1. **Locate the plan file:**
+   - The plan lives at: `.opencode/plans/<plan-name>.md` (relative to repo root)
+
+2. **Read the existing plan.** If it doesn't exist, list available plans in `.opencode/plans/` and tell the user.
+
+3. **Analyze what changes are needed** based on the user's requested updates. Investigate code or context as necessary.
+
+4. **Update the plan file** — apply the changes, update the `Updated` date in frontmatter, and save to disk.
+
+5. **Return update metadata** — summarize what sections changed and why.
 
 ## Important
 
-- Always show the current plan before asking what to update — the user needs context
-- Keep the conversation natural — don't force them through a rigid update flow
-- Multiple rounds of updates are fine — save when the user is satisfied
-- If the plan status is `completed`, ask if they want to reopen it before making changes
+- This command ONLY gathers user intent, then delegates everything to the Architect.
+- Do NOT fall back to a general-purpose agent. All work stays within the Architect.
+- Do NOT run git commits, pushes, or PRs.
