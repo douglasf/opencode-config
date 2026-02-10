@@ -26,47 +26,63 @@ Load a plan and implement it step by step, delegating each step to Wolf.
 
 4. **Update the plan status** to `in-progress` and save it back to disk.
 
-5. **Analyze step dependencies and execute in parallel where possible:**
+5. **Execute the plan in waves of ready steps:**
 
-   Before executing, analyze the implementation steps for dependencies:
-   - Can any steps run independently of others? (no shared file changes, no output dependency)
-   - Group independent steps together
-   - Identify sequential chains (step B depends on A's output)
-   
-   Execute in this order:
-   - All parallel groups run simultaneously via Task() calls in a single message
-   - Sequential chains execute after their dependencies complete
-   - Report progress to the user after each group completes
-   
-   For each group:
-   a. Tell the user which steps are starting (and if parallel, note "running in parallel")
-   b. Delegate to Wolf via Task() — if multiple independent steps, emit multiple Task() calls simultaneously
-   c. Wait for all tasks in the group to complete
-   d. Report results
-   e. Ask if they want to continue or review
-   
-   Example format for parallel execution:
+   **Anti-bundling rule — NEVER combine multiple plan steps into one Task() call; each independent step must get its own Wolf task.**
+   Marsellus MUST honor this rule without exception. One step = one Task(). No bundling, no merging, no "and also do step N" inside another step's prompt.
+
+   ### Wave loop
+
+   Repeat until every plan step has been executed:
+
+   a. **Identify ready steps.** A step is "ready" when all of its dependencies (prior steps whose output or file changes it needs) have completed successfully. Steps with no dependencies are ready immediately.
+
+   b. **Hard Rule / exit gate:** Before writing any explanation or user-facing text, count the ready steps and count the Task() calls you are about to emit. These two numbers MUST be equal. If they are not, stop and fix the mismatch before proceeding.
+
+   c. **Emit one Task() call per ready step — all in the same response.** This is what "parallel" means: multiple Task() calls sent simultaneously so Wolf instances run concurrently. Tell the user which steps are starting and that they are running in parallel (if more than one).
+
+   d. **Wait for every Task() in the wave to finish.**
+
+   e. **Report results for the wave.** Summarize what succeeded and what failed.
+
+   f. **If any step in the wave failed**, stop execution and report the failure to the user. Do NOT continue to the next wave.
+
+   g. **If all steps in the wave succeeded**, proceed immediately to the next wave (go back to step a). Do NOT pause to ask the user for confirmation or review.
+
+   ### Task() call format
+
+   Each Task() call must reference the full plan for context and target exactly one step:
+
+   ```
+   Task(
+     subagent_type: "wolf",
+     description: "Plan step 1: <short description>",
+     prompt: "<Full plan context>\n\nImplement ONLY step 1: <detailed instructions for this single step>"
+   )
+   ```
+
+   Example — a wave with two ready steps (step 1 and step 3 are independent):
    ```
    Task(
      subagent_type: "wolf",
      description: "Plan step 1: <desc>",
-     prompt: "Implement step 1..."
+     prompt: "...Implement ONLY step 1..."
    )
    Task(
-     subagent_type: "wolf", 
+     subagent_type: "wolf",
      description: "Plan step 3: <desc>",
-     prompt: "Implement step 3..."
+     prompt: "...Implement ONLY step 3..."
    )
    ```
-   (Steps 2 and 4 would queue after steps 1 and 3 complete, if they depend on them)
+   Steps 2 and 4 would form a later wave once their dependencies (steps 1 and 3) complete.
 
 6. **After all steps are complete**, update the plan status to `completed` and save.
 
 ## Important
 
 - Always give Wolf the FULL plan as context, not just the current step — Wolf needs to understand the bigger picture
-- Analyze each step for dependencies — execute independent steps in parallel, sequence only when there's a real dependency
+- Analyze each step for dependencies — execute independent steps in parallel (one Task() per step, multiple Task() calls in one response), sequence only when there is a real dependency
+- **NEVER combine multiple plan steps into one Task() call.** Each step gets its own Wolf task. This is non-negotiable.
 - If a step fails, stop and report the failure. Don't continue blindly.
-- After each step, give the user a chance to review before continuing
-- The user can always say "skip" to move to the next step or "stop" to pause implementation
+- When a wave succeeds, proceed immediately to the next wave — do NOT pause to ask the user for confirmation or review
 - Do NOT attempt git operations — remind the user to use `/commit` when they want to save progress
