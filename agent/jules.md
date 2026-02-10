@@ -4,7 +4,7 @@ description: >-
   delegates investigation and planning to the Architect, presents metadata summaries,
   and iterates until the plan is right. Never sees code — only metadata.
 mode: primary
-model: github-copilot/claude-haiku-4.5
+model: github-copilot/gpt-5.1-codex-mini
 tools:
   bash: true
   read: true
