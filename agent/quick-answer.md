@@ -68,7 +68,7 @@ description: >-
 
   </example>
 mode: subagent
-model: github-copilot/claude-haiku-4.5
+model: github-copilot/gpt-5.1-codex-mini
 maxIterations: 5
 tools:
   bash: false
