@@ -5,6 +5,9 @@ description: >-
   complete plan documents. Returns only metadata summaries to the parent agent.
 mode: subagent
 model: github-copilot/claude-opus-4.6
+temperature: 0.2
+top_p: 0.6
+thinking: { type: "enabled", budgetTokens: 3000 }
 steps: 75
 tools:
   bash: true
