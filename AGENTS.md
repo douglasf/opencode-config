@@ -103,9 +103,9 @@ Not applicable — there are no tests. If tests are added in the future, documen
 
 Understanding the delegation model is essential before modifying any agent:
 
-1. **Marsellus** (orchestrator) — receives user requests, delegates to Wolf or Vincent via `Task()`. Never reads code or runs commands (except read-only git). Cannot invoke the git agent.
-2. **Wolf** (executor) — does all implementation work. Cannot delegate to other agents. Cannot run git write operations. Reports results to Marsellus.
-3. **Vincent** (investigator) — deep read-only analysis. No write access, no builds, no delegating. Returns structured findings.
+1. **Marsellus** (orchestrator) — receives user requests, delegates to Wolf (implementation) or Vincent (analysis-only) via `Task()`. Default bias is to send Wolf. Never reads code or runs commands (except read-only git). Cannot invoke the git agent.
+2. **Wolf** (executor) — does all implementation work. Can delegate to Vincent for deep investigation mid-task. Cannot run git write operations. Reports results to Marsellus.
+3. **Vincent** (investigator) — deep read-only analysis. No write access, no builds, no delegating. Returns structured findings. Called by Marsellus for analysis-only requests, or by Wolf when deep investigation is needed during implementation.
 4. **Architect** — investigation + planning. Delegates to Vincent for research, writes plan documents to `.opencode/plans/`. Returns metadata only.
 5. **Jules** (planning coordinator) — interviews user, delegates to Architect. Cannot read source code.
 6. **Git** — only invoked via `/commit`, `/push`, `/pr`. Has full git write permissions. No file edit access.
