@@ -1,10 +1,13 @@
 {
   "$schema": "https://opencode.ai/config.json",
-  "model": "github-copilot/gpt-5.1-codex-mini",
-  "small_model": "github-copilot/gpt-5.1-codex-mini",
+  "model": "github-copilot/claude-haiku-4.5",
+  "small_model": "github-copilot/claude-haiku-4.5",
   "default_agent": "marsellus",
   "autoupdate": true,
   "plugin": ["opencode-pty", "cc-safety-net", "opencode-notify"],
+  "keybinds": {
+    "leader": "ctrl+s"
+  },
   "lsp": {
     "kotlin": {
       "command": ["kotlin-lsp", "--stdio"],
@@ -17,14 +20,6 @@
     },
     "plan": {
       "disable": true
-    },
-    "wolf": {
-      "permission": {
-        "bash": {
-          // Common utilities - always safe
-          "sleep*": "allow"
-        }
-      }
     }
   }
 }

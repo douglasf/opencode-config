@@ -31,6 +31,9 @@
   // Heavy-lifting agents stay on opus (set explicitly per-agent below)
   "model": "opencode/kimi-k2.5-free",
   "small_model": "opencode/kimi-k2.5-free",
+  "keybinds": {
+    "leader": "ctrl+s"
+  },
 
   "agent": {
     // ======================================================================
