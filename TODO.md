@@ -2,15 +2,24 @@
 
 ## Pending
 
-- [ ] **TODO-001** — Allow agents to use `sleep` intentionally across both security modes
-  - **Why it matters**: Agents sometimes need a deliberate pause — waiting for a server to boot, a port to open, or a CI artifact to propagate — before continuing. Without an allowed `sleep`, they either poll in a tight loop (wasting tokens) or skip the wait and hit a race condition.
-  - **Context**:
-    - `opencode.jsonc` (strict mode) already allows `sleep*` under wolf's bash permissions (line 25).
-    - `opencode-yolo.jsonc` has an exhaustive "Common utilities" section but does **not** include `sleep*`. An agent running under YOLO mode will be prompted or denied when it tries to sleep.
-    - `sleep` is a harmless, read-nothing, write-nothing command — there is no security reason to gate it behind `ask`.
-  - **Next steps**:
-    1. Add `"sleep*": "allow"` to the "Common utilities" block in `opencode-yolo.jsonc` (around line 288, alongside `cat*`, `head*`, etc.).
-    2. Verify both configs parse cleanly (`cat opencode.jsonc | jq . && cat opencode-yolo.jsonc | jq .` or equivalent JSONC validator).
-    3. Optionally document in the agent files (e.g., `wolf.md`) that `sleep N` is an approved pattern for waiting on external processes.
+### Critical Fixes
+
+- [ ] **F1: Fix `/plan-list` command broken state** — Add `agent: marsellus` to frontmatter and rewrite instructions to use `read` tool instead of `ls` (command/plan-list.md). Command currently falls back to Marsellus who can't run bash. Alternatively route to `jules` agent who has bash access.
+
+- [ ] **F2: Rewrite `/plan-update` command** — Currently tells Jules to update plan herself, but Jules lacks write permissions and role forbids this work. Step 2 should be a `Task(subagent_type="architect", ...)` delegation instead of direct action (command/plan-update.md).
+
+- [ ] **F3: Restrict YOLO Wolf task delegation** — Change `opencode-yolo.jsonc` line 505 from `"task": "allow"` to `"task": { "*": "ask", "vincent": "allow", "git": "deny" }` to prevent Wolf from delegating to git agent directly without user slash commands.
+
+### Important Fixes
+
+- [ ] **F4: Remove Jules' unrestricted `cat` access** — Replace `cat *: allow` with `cat .opencode/plans/*: allow` in agent/jules.md line 26 to match read tool restrictions and prevent source code access.
+
+- [ ] **F5: Add guardrails to git agent branch operations** — Add explicit denies for `git branch -D*` and `git branch -M*` in agent/git.md line 22, or document as accepted risk.
+
+- [ ] **F6: Explicit tool declarations for Wolf and Git agents** — Add explicit `tools:` blocks to agent/wolf.md and agent/git.md instead of relying on defaults. Every other agent explicitly declares its tools.
+
+- [ ] **F7: Restrict Architect write access** — Add write path restriction in agent/architect.md: `write: { ".opencode/plans/*": allow, "*": deny }` to match edit scope restrictions.
+
+- [ ] **F8: Check that YOLO conf is still in line with its intent** — Audit the YOLO mode configuration (opencode-yolo.jsonc) to ensure it still aligns with its original design philosophy and intent. Review permission grants, tool access levels, and agent capabilities to verify they match the intended relaxed-but-safe model.
 
 ## Completed
