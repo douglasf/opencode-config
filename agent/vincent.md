@@ -128,6 +128,15 @@ permission:
     "gh api */check-runs*": allow
     "gh api */check-suites*": allow
 
+    # ── Google Cloud: read-only (logs and traces) ──
+    "gcloud logging read*": allow
+    "gcloud logging tail*": allow
+    "gcloud logging list*": allow
+    "gcloud logging describe*": allow
+    "gcloud trace *": allow
+    "gcloud traces *": allow
+    "gcloud projects describe*": allow
+
     # ── Package introspection (read-only) ──
     "npm ls": allow
     "npm ls *": allow
