@@ -13,6 +13,7 @@ tools:
   grep: false
   glob: false
   task: true
+  todo-add: true
 permission:
   bash:
     "*": deny
@@ -26,6 +27,7 @@ permission:
     "git log --name-only*": allow
     "git log --name-status*": allow
   read: allow
+  todo-add: allow
   task:
     "*": deny
     "wolf": allow

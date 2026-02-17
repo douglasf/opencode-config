@@ -3,18 +3,20 @@ description: Manage TODO.md — update completed items from git history or add n
 agent: marsellus
 ---
 
-Manage the project's TODO.md file. This command has two modes based on arguments.
+Manage the project's TODO.md file. This command has two modes based on whether arguments are provided.
 
 ## Arguments
 
 $ARGUMENTS
 
-## Mode Detection
+## Routing — Read This First
 
-- **If `$ARGUMENTS` is empty** → **Update mode**: delegate to `todo` subagent
-- **If `$ARGUMENTS` is non-empty** → **Add mode**: call `todo-add` tool
+Check `$ARGUMENTS` above. Your behavior depends entirely on whether it is empty or not:
 
-## Update Mode (`/todo`)
+- **`$ARGUMENTS` is empty** → go to **Update Mode** below (delegate to `todo` subagent)
+- **`$ARGUMENTS` is non-empty** → go to **Add Mode** below (you call `todo-add` directly — do NOT delegate)
+
+## Update Mode (`/todo` with no arguments)
 
 Delegate to the `todo` subagent to scan git history and update TODO.md:
 
@@ -28,19 +30,21 @@ Task(
 
 Relay the subagent's report directly to the user.
 
-## Add Mode (`/todo <description>`)
+## Add Mode (`/todo <idea>` with arguments)
 
-The user wants to add a new TODO entry. Analyze their description to determine:
+**You handle this yourself. Do NOT delegate to any subagent.**
 
-- **title**: Extract a clean, concise title from `$ARGUMENTS`
-- **priority**: Infer from language:
+The user's idea is in `$ARGUMENTS`. Expand on it — flesh out the idea into a clear, actionable description. Then determine:
+
+- **title**: A clean, concise title distilled from the user's idea
+- **priority**: Infer from the language:
   - Words like "critical", "urgent", "breaking", "blocker" → `critical`
   - Words like "important", "should", "significant" → `important`
   - Default → `normal`
-- **details**: The full description text, expanded if needed
-- **section**: Default to `Pending` unless the description explicitly says "completed" or "done"
+- **details**: The user's idea expanded into a fuller description — add context, clarify intent, suggest scope. Make it useful for whoever picks it up later.
+- **section**: Always `Pending` (unless the user explicitly says "completed" or "done")
 
-Then call the `todo-add` tool:
+Call the `todo-add` tool directly:
 
 ```
 todo-add(
@@ -53,19 +57,9 @@ todo-add(
 
 Report the result to the user: what was added, the assigned ID, and where it was placed.
 
-If the `todo-add` tool is not available, fall back to delegating to the `todo` subagent:
-
-```
-Task(
-  subagent_type: "todo",
-  description: "Add TODO entry",
-  prompt: "Add mode: Add a new entry to TODO.md with the following details:\n\nTitle: <title>\nPriority: <priority>\nSection: Pending\nDetails: <details>\n\nGenerate the next ID, format the entry properly, and insert it in the correct subsection."
-)
-```
-
 ## Examples
 
-- `/todo` → Scans git history, checks off completed items, fixes formatting
-- `/todo Fix the broken auth token refresh in the middleware` → Adds a new Pending/important entry
-- `/todo critical: Deploy pipeline fails on ARM64 builds` → Adds a new Pending/critical entry
-- `/todo Add dark mode toggle to settings page` → Adds a new Pending/normal entry
+- `/todo` → Update mode: delegates to todo subagent, scans git history, checks off completed items
+- `/todo Fix the broken auth token refresh in the middleware` → Add mode: Marsellus calls todo-add directly with priority "important"
+- `/todo critical: Deploy pipeline fails on ARM64 builds` → Add mode: Marsellus calls todo-add directly with priority "critical"
+- `/todo Add dark mode toggle to settings page` → Add mode: Marsellus calls todo-add directly with priority "normal"
