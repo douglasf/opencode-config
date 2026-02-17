@@ -22,4 +22,6 @@
 
 - [ ] **F8: Check that YOLO conf is still in line with its intent** — Audit the YOLO mode configuration (opencode-yolo.jsonc) to ensure it still aligns with its original design philosophy and intent. Review permission grants, tool access levels, and agent capabilities to verify they match the intended relaxed-but-safe model.
 
+- [ ] **F9: Move TODO.md to .opencode/ directory for local tracking** — Relocate TODO.md from the repository root to .opencode/TODO.md so that TODO items are treated as local workspace state rather than version-controlled project artifacts. This keeps personal task tracking separate from committed project files. May require updating any scripts or tools that reference the root-level TODO.md path, and adding .opencode/TODO.md to .gitignore if not already present.
+
 ## Completed
