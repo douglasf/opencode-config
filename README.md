@@ -4,18 +4,18 @@ Personal OpenCode setup with custom agents, commands, and plugins. Lives at `~/.
 
 ## Good Usage
 
-This config uses a **multi-agent architecture**. When you type in OpenCode, you're talking to the **orchestrator** (Marsellus) — it never does work itself. Instead, it delegates to specialized agents: **Wolf** (reads, writes, searches, runs commands — all the actual work), **git** (commits, pushes, PRs — only via slash commands), and **quick-answer** (fast, concise responses with no deep investigation). The orchestrator breaks your request into subtasks, dispatches them to Wolf (in parallel when possible), and synthesizes the results.
+This config uses a **multi-agent architecture**. When you type in OpenCode, you're talking to the **orchestrator** (Marsellus) — it never does work itself. Instead, it delegates to specialized agents: **Wolf** for implementation (reads, writes, searches, runs commands), **Vincent** for deep analysis (read-only codebase investigation), and **git** for version control (commits, pushes, PRs — only via slash commands). The orchestrator routes your request to the right agent, waits for results, and synthesizes a response.
 
 You can also switch to the **Jules** agent (via tab) when you want to think through a feature or design before building. Jules interviews you about what you want to build, delegates investigation and planning to the **Architect** (who uses **Vincent** for deep analysis), and presents concise metadata summaries. You iterate with Jules on scope and decisions — then hand off to Wolf for implementation when ready.
 
 ### Day-to-Day Workflow
 
-- **Ask a question or request a change** — just type naturally. The orchestrator will delegate to wolf, which investigates and executes autonomously. You don't need to manage the agents yourself.
+- **Ask a question or request a change** — just type naturally. The orchestrator will route to the right agent. Implementation requests go to Wolf, who investigates and executes autonomously. Analysis-only requests go to Vincent.
 - **Quick lookups** — use `/quick how do I do X` for fast, direct answers without the full investigation cycle. Great for syntax reminders, port numbers, or quick factual questions.
 - **Planning** — switch to the **Jules** tab when you need to think through something bigger: a new feature, architectural change, or multi-step refactor. Describe what you want and Jules will guide you through a structured planning process, producing a plan document you can implement later.
 - **Code changes** — describe what you want changed and where. Wolf will read the relevant files, make edits, and run tests if appropriate. Review the changes before committing.
 - **Committing** — the orchestrator will *never* commit on its own. When you're happy with the changes, use `/commit` to stage and commit with an auto-generated message. Use `/push` and `/pr` for the rest of the git workflow.
-- **Code review** — use `/review` to get a review of your staged or unstaged changes before committing.
+- **Code review** — use `/review` to get a review of your staged/unstaged changes before committing.
 
 ### Strict vs YOLO Mode
 
@@ -23,10 +23,9 @@ By default, **strict mode** is active everywhere — the AI cannot run arbitrary
 
 ### Things to Know
 
-- The orchestrator speaks in the style of Winston Wolf from Pulp Fiction. This is intentional — don't be alarmed.
 - Wolf reports back what it did but does not commit. You always control when changes are committed.
-- If you're in strict mode and wolf says it can't run a command, that's the guardrails working. Either switch to YOLO mode or run the command yourself.
-- Slash commands (`/commit`, `/push`, `/pr`, `/review`, `/quick`) are the primary way to trigger specific workflows. Type `/` to see what's available.
+- If you're in strict mode and Wolf says it can't run a command, that's the guardrails working. Either switch to YOLO mode or run the command yourself.
+- Slash commands (`/commit`, `/push`, `/pr`, `/review`, `/quick`, `/todo`) are the primary way to trigger specific workflows. Type `/` to see what's available.
 
 ## Structure
 
@@ -34,11 +33,107 @@ By default, **strict mode** is active everywhere — the AI cannot run arbitrary
 ~/.config/opencode/
   opencode.jsonc          # Global config (strict mode — default)
   opencode-yolo.jsonc     # Relaxed config (YOLO mode — opt-in per repo)
-  agents/                 # Agent definitions (marsellus.md, wolf.md, vincent.md, jules.md, architect.md, git.md, quick-answer.md)
-  command/                # Slash commands (/commit, /push, /pr, /review, /quick)
+  package.json            # Sole dependency: @opencode-ai/plugin
+  bun.lock                # Bun lockfile
+  agent/                  # Agent definitions (marsellus, wolf, vincent, jules, architect, git, quick-answer, todo)
+  command/                # Slash commands (/commit, /push, /pr, /review, /quick, /todo, /plan-*)
   plugins/                # Custom plugins (copilot-usage)
+  tools/                  # Custom tools (progress reporting)
   docs/                   # Design docs and analysis
 ```
+
+## Agents
+
+### Delegation Flow
+
+```
+┌─────────────────────────────────────────────────────────────────┐
+│                         User Input                              │
+└──────────┬────────────────────────┬─────────────────────────────┘
+           │                        │
+     (default tab)            (Jules tab)
+           │                        │
+           ▼                        ▼
+    ┌─────────────┐          ┌─────────────┐
+    │  Marsellus  │          │    Jules    │
+    │ orchestrator│          │  planning   │
+    │             │          │  coordinator│
+    └──┬───────┬──┘          └──┬───────┬──┘
+       │       │                │       │
+  "do" │       │ "know"         │       │ (hand off to
+       │       │                │       │  implementation)
+       ▼       ▼                ▼       ▼
+    ┌──────┐ ┌──────────┐  ┌──────────┐ ┌──────┐
+    │ Wolf │ │ Vincent  │  │Architect │ │ Wolf │
+    │      │ │          │  │          │ │      │
+    └──┬───┘ └──────────┘  └────┬─────┘ └───┬──┘
+       │      (terminal)        │           │
+       │                        ▼           │
+       │                   ┌─────────┐      │
+       ├──────────────────▶│ Vincent │◀─────┘
+       │  (deep analysis)  └─────────┘
+       │                    (terminal)
+       ▼
+   ┌────────┐   ┌──────────────┐   ┌──────┐
+   │  todo  │   │ quick-answer │   │ git  │
+   └────────┘   └──────────────┘   └──────┘
+   (terminal)     (terminal)     (slash cmds only)
+```
+
+**Routing rules:**
+- **Marsellus** routes based on intent: "do something" → Wolf, "know something" → Vincent. Default bias is Wolf.
+- **Wolf** can self-delegate to Vincent mid-task when deep investigation is needed.
+- **Jules** delegates to Architect for investigation + planning, or to Wolf for implementation handoff.
+- **Architect** delegates to Vincent for deep codebase research.
+- **Vincent**, **git**, **quick-answer**, and **todo** are terminal — they do not delegate further.
+
+### Agent Roles
+
+| Agent | Role | Model | Mode | Can Delegate To |
+|---|---|---|---|---|
+| **Marsellus** | Orchestrator — receives user requests, routes to the right agent. Never reads code, edits files, or runs commands (except read-only git for context). | Claude Haiku 4.5 | Primary | Wolf, Vincent, todo |
+| **Wolf** | Executor — reads, writes, edits, searches, and runs commands. Does all implementation work. Owns the full cycle from investigation to delivery. | Claude Opus 4.6 | Subagent | Vincent |
+| **Vincent** | Investigator — deep read-only codebase analysis. Traces dependencies, maps architecture, returns structured findings with file paths and line numbers. Never modifies anything. | Claude Opus 4.6 | Subagent | *None* |
+| **Architect** | Planner — combines investigation (directly + via Vincent) with structured planning. Writes plan documents to `.opencode/plans/`. Returns only metadata summaries to caller. | Claude Opus 4.6 | Subagent | Vincent |
+| **Jules** | Planning coordinator — interviews users about what to build, delegates investigation and planning to the Architect. Only sees plan metadata, never source code. | Claude Haiku 4.5 | Primary | Architect, Wolf |
+| **git** | Git specialist — commits, pushes, creates PRs. Only invoked via `/commit`, `/push`, `/pr` slash commands. Has full git write permissions but no file edit access. | Claude Opus 4.6 | Subagent | *None* |
+| **quick-answer** | Fast responder — concise answers to simple questions. Only has `webfetch` for lookups. No file access, no investigation. | Claude Haiku 4.5 | Subagent | *None* |
+| **todo** | TODO manager — reads git history, matches commits to TODO.md items, checks off completed items. Can only modify TODO.md. | Claude Opus 4.6 | Subagent | *None* |
+
+### Permission Model
+
+Each agent has a strict permission boundary enforced by the tool and bash permission configs. The principle is **least privilege** — agents only get the access they need.
+
+| Agent | File Read | File Write/Edit | Bash | Git (read) | Git (write) | Task Delegation | Web Access |
+|---|---|---|---|---|---|---|---|
+| **Marsellus** | Limited (prompt context only) | No | No | Yes (status, log) | No | Wolf, Vincent, todo | No |
+| **Wolf** | Full | Full | Extensive allow-list (read-only + builds/tests) | Yes | No | Vincent | No |
+| **Vincent** | Full | No | Read-only exploration only | Yes | No | No | Yes |
+| **Architect** | Full | Plans directory only (`.opencode/plans/`) | Minimal (ls, cat, git read) | Yes | No | Vincent | Yes |
+| **Jules** | Plans directory only | No | Plan storage + git context | Yes | No | Architect, Wolf | No |
+| **git** | Full | No | Git + GitHub CLI (full write) | Yes | Yes | No | No |
+| **quick-answer** | No | No | No | No | No | No | Yes |
+| **todo** | Full | TODO.md only | Git read-only | Yes | No | No | No |
+
+**Key constraints:**
+- **Git write operations are forbidden** for all agents except git. Wolf, Vincent, Architect, Jules, and todo cannot run `git add`, `git commit`, `git push`, etc.
+- **The orchestrator never does work.** Marsellus has no grep, glob, write, or edit tools. It only delegates via `Task()`.
+- **Vincent is strictly read-only.** No file writes, no builds, no package installs, no code execution. Not even `make` or `npm run`.
+- **Wolf has broad bash access** in strict mode, but it's an explicit allow-list — default-deny with whitelisted commands for builds, tests, linting, and read-only tools. Dangerous operations (cloud mutations, remote access, package publishing, system commands) are denied.
+- **Architect can only write to `.opencode/plans/`** — it cannot modify source code.
+- **Jules cannot read source code** — its read access is restricted to plan files only.
+
+## Slash Commands
+
+- `/commit` — Stage and commit changes with an auto-generated message
+- `/push` — Push current branch to remote
+- `/pr` — Create a pull request
+- `/review` — Code review of staged/unstaged changes
+- `/quick` — Quick answer mode (fast, concise responses)
+- `/todo` — Update TODO.md by matching git commits to pending items
+- `/plan-list` — List all plans for the current repo
+- `/plan-implement <plan-name>` — Implement a plan step by step (delegates to Wolf)
+- `/plan-update <plan-name>` — Load a plan and update it through conversation
 
 ## Security Modes
 
@@ -46,14 +141,13 @@ This configuration supports two security modes for OpenCode:
 
 | | **Strict** (default) | **YOLO** (opt-in) |
 |---|---|---|
-| **Bash access** | Denied (except read-only git commands) | Allowed |
-| **File editing** | Restricted | Allowed |
-| **Agent permissions** | Locked down | Relaxed |
+| **Activation** | Automatic everywhere | Symlink `opencode-yolo.jsonc` into repo's `.opencode/opencode.jsonc` |
+| **Bash for Wolf** | Default-deny, explicit allow-list (builds, tests, read-only tools) | Default-ask, broad allow-list |
+| **File editing** | Allowed (Wolf has full write/edit) | Allowed |
+| **Git mutations** | Denied (git agent only, via slash commands) | Allowed (except force-push/hard-reset) |
+| **Docker** | Build + compose only | Full local access |
+| **Cloud CLIs** | Denied | Read-only allowed, mutations ask/deny |
 | **Use case** | Work repos, shared projects, anything with risk | Personal repos, experiments, throwaway projects |
-
-**Strict mode** is the global default — it applies automatically to every project unless overridden. The orchestrator can only delegate to wolf and cannot run arbitrary commands.
-
-**YOLO mode** relaxes these restrictions for repos where you trust the AI to operate freely. It's designed for personal projects where speed matters more than guardrails.
 
 ### Enabling YOLO Mode in a Repo
 
@@ -110,27 +204,6 @@ rm .opencode/opencode.jsonc
 ```
 
 The repo immediately falls back to strict global defaults.
-
-## Agents
-
-- **marsellus** (default) — The orchestrator. Delegates everything to wolf, vincent, or architect. Never does work itself.
-- **jules** (Jules) — The planning coordinator. Switch to this tab when you need to design before you build. Interviews you about what you want, delegates investigation and planning to the Architect, presents metadata summaries, and iterates until the plan is right. Never sees code.
-- **architect** — The investigation-and-planning engine. Combines deep codebase analysis (via Vincent) with structured plan creation. Receives requests from Jules or Marsellus, investigates, writes complete plan documents to disk, and returns only metadata summaries. Powered by Claude Opus.
-- **vincent** — The investigator. Deep codebase analyst powered by Claude Opus. Read-only — explores code, traces dependencies, and returns structured findings. The Architect's research arm.
-- **wolf** — The executor. Reads, writes, searches, runs commands. Does all the actual work.
-- **git** — Handles commits, pushes, and PRs. Only invoked via slash commands.
-- **quick-answer** — Fast, concise answers without deep investigation.
-
-## Slash Commands
-
-- `/commit` — Stage and commit changes with an auto-generated message
-- `/push` — Push current branch to remote
-- `/pr` — Create a pull request
-- `/review` — Code review of staged/unstaged changes
-- `/quick` — Quick answer mode
-- `/plan-list` — List all plans for the current repo
-- `/plan-implement <plan-name>` — Implement a plan step by step (delegates to Wolf)
-- `/plan-update <plan-name>` — Load a plan and update it through conversation
 
 ## Plan Storage
 
