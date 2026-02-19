@@ -5,6 +5,7 @@ description: >-
   street-smart, professional.
 mode: primary
 model: github-copilot/claude-haiku-4.5
+variant: thinking
 tools:
   bash: false
   read: true
