@@ -25,7 +25,7 @@ By default, **strict mode** is active everywhere — the AI cannot run arbitrary
 
 - Wolf reports back what it did but does not commit. You always control when changes are committed.
 - If you're in strict mode and Wolf says it can't run a command, that's the guardrails working. Either switch to YOLO mode or run the command yourself.
-- Slash commands (`/commit`, `/push`, `/pr`, `/review`, `/quick`, `/todo`) are the primary way to trigger specific workflows. Type `/` to see what's available.
+- Slash commands (`/commit`, `/push`, `/pr`, `/review`, `/quick`) are the primary way to trigger specific workflows. Type `/` to see what's available.
 
 ## Structure
 
@@ -35,8 +35,8 @@ By default, **strict mode** is active everywhere — the AI cannot run arbitrary
   opencode-yolo.jsonc     # Relaxed config (YOLO mode — opt-in per repo)
   package.json            # Sole dependency: @opencode-ai/plugin
   bun.lock                # Bun lockfile
-  agent/                  # Agent definitions (marsellus, wolf, vincent, jules, architect, git, quick-answer, todo)
-  command/                # Slash commands (/commit, /push, /pr, /review, /quick, /todo, /plan-*)
+  agent/                  # Agent definitions (marsellus, wolf, vincent, jules, architect, git, quick-answer)
+  command/                # Slash commands (/commit, /push, /pr, /review, /quick, /plan-*)
   plugins/                # Custom plugins (copilot-usage)
   tools/                  # Custom tools (progress reporting)
   docs/                   # Design docs and analysis
@@ -71,13 +71,13 @@ By default, **strict mode** is active everywhere — the AI cannot run arbitrary
        │                        ▼           │
        │                   ┌─────────┐      │
        ├──────────────────▶│ Vincent │◀─────┘
-       │  (deep analysis)  └─────────┘
-       │                    (terminal)
-       ▼
-   ┌────────┐   ┌──────────────┐   ┌──────┐
-   │  todo  │   │ quick-answer │   │ git  │
-   └────────┘   └──────────────┘   └──────┘
-   (terminal)     (terminal)     (slash cmds only)
+        │  (deep analysis)  └─────────┘
+        │                    (terminal)
+        ▼
+   ┌──────────────┐   ┌──────┐
+   │ quick-answer │   │ git  │
+   └──────────────┘   └──────┘
+     (terminal)     (slash cmds only)
 ```
 
 **Routing rules:**
@@ -85,20 +85,19 @@ By default, **strict mode** is active everywhere — the AI cannot run arbitrary
 - **Wolf** can self-delegate to Vincent mid-task when deep investigation is needed.
 - **Jules** delegates to Architect for investigation + planning, or to Wolf for implementation handoff.
 - **Architect** delegates to Vincent for deep codebase research.
-- **Vincent**, **git**, **quick-answer**, and **todo** are terminal — they do not delegate further.
+- **Vincent**, **git**, and **quick-answer** are terminal — they do not delegate further.
 
 ### Agent Roles
 
 | Agent | Role | Model | Mode | Can Delegate To |
 |---|---|---|---|---|
-| **Marsellus** | Orchestrator — receives user requests, routes to the right agent. Never reads code, edits files, or runs commands (except read-only git for context). | Claude Haiku 4.5 | Primary | Wolf, Vincent, todo |
+| **Marsellus** | Orchestrator — receives user requests, routes to the right agent. Never reads code, edits files, or runs commands (except read-only git for context). | Claude Haiku 4.5 | Primary | Wolf, Vincent |
 | **Wolf** | Executor — reads, writes, edits, searches, and runs commands. Does all implementation work. Owns the full cycle from investigation to delivery. | Claude Opus 4.6 | Subagent | Vincent |
 | **Vincent** | Investigator — deep read-only codebase analysis. Traces dependencies, maps architecture, returns structured findings with file paths and line numbers. Never modifies anything. | Claude Opus 4.6 | Subagent | *None* |
 | **Architect** | Planner — combines investigation (directly + via Vincent) with structured planning. Writes plan documents to `.opencode/plans/`. Returns only metadata summaries to caller. | Claude Opus 4.6 | Subagent | Vincent |
 | **Jules** | Planning coordinator — interviews users about what to build, delegates investigation and planning to the Architect. Only sees plan metadata, never source code. | Claude Haiku 4.5 | Primary | Architect, Wolf |
 | **git** | Git specialist — commits, pushes, creates PRs. Only invoked via `/commit`, `/push`, `/pr` slash commands. Has full git write permissions but no file edit access. | Claude Opus 4.6 | Subagent | *None* |
 | **quick-answer** | Fast responder — concise answers to simple questions. Only has `webfetch` for lookups. No file access, no investigation. | Claude Haiku 4.5 | Subagent | *None* |
-| **todo** | TODO manager — reads git history, matches commits to TODO.md items, checks off completed items. Can only modify TODO.md. | Claude Opus 4.6 | Subagent | *None* |
 
 ### Permission Model
 
@@ -106,17 +105,16 @@ Each agent has a strict permission boundary enforced by the tool and bash permis
 
 | Agent | File Read | File Write/Edit | Bash | Git (read) | Git (write) | Task Delegation | Web Access |
 |---|---|---|---|---|---|---|---|
-| **Marsellus** | Limited (prompt context only) | No | No | Yes (status, log) | No | Wolf, Vincent, todo | No |
+| **Marsellus** | Limited (prompt context only) | No | No | Yes (status, log) | No | Wolf, Vincent | No |
 | **Wolf** | Full | Full | Extensive allow-list (read-only + builds/tests) | Yes | No | Vincent | No |
 | **Vincent** | Full | No | Read-only exploration only | Yes | No | No | Yes |
 | **Architect** | Full | Plans directory only (`.opencode/plans/`) | Minimal (ls, cat, git read) | Yes | No | Vincent | Yes |
 | **Jules** | Plans directory only | No | Plan storage + git context | Yes | No | Architect, Wolf | No |
 | **git** | Full | No | Git + GitHub CLI (full write) | Yes | Yes | No | No |
 | **quick-answer** | No | No | No | No | No | No | Yes |
-| **todo** | Full | TODO.md only | Git read-only | Yes | No | No | No |
 
 **Key constraints:**
-- **Git write operations are forbidden** for all agents except git. Wolf, Vincent, Architect, Jules, and todo cannot run `git add`, `git commit`, `git push`, etc.
+- **Git write operations are forbidden** for all agents except git. Wolf, Vincent, Architect, and Jules cannot run `git add`, `git commit`, `git push`, etc.
 - **The orchestrator never does work.** Marsellus has no grep, glob, write, or edit tools. It only delegates via `Task()`.
 - **Vincent is strictly read-only.** No file writes, no builds, no package installs, no code execution. Not even `make` or `npm run`.
 - **Wolf has broad bash access** in strict mode, but it's an explicit allow-list — default-deny with whitelisted commands for builds, tests, linting, and read-only tools. Dangerous operations (cloud mutations, remote access, package publishing, system commands) are denied.
@@ -130,7 +128,6 @@ Each agent has a strict permission boundary enforced by the tool and bash permis
 - `/pr` — Create a pull request
 - `/review` — Code review of staged/unstaged changes
 - `/quick` — Quick answer mode (fast, concise responses)
-- `/todo` — Update TODO.md by matching git commits to pending items
 - `/plan-list` — List all plans for the current repo
 - `/plan-implement <plan-name>` — Implement a plan step by step (delegates to Wolf)
 - `/plan-update <plan-name>` — Load a plan and update it through conversation

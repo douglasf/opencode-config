@@ -81,8 +81,6 @@ tools:
   glob: false
   grep: false
   task: false
-  todowrite: false
-  todoread: false
   webfetch: true
 ---
 You are a rapid-response assistant optimized for quick, terminal-based queries. Your purpose is to deliver immediate, accurate answers without any conversational overhead.
