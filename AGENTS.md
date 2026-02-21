@@ -61,6 +61,8 @@ Not applicable — there are no tests. If tests are added in the future, documen
     copilot-usage.ts      #   GitHub Copilot premium-quota monitor
   tools/                  # Custom tools (TypeScript)
     progress.ts           #   Real-time progress reporting via TUI title
+  lib/                    # Internal utilities (TypeScript, not auto-discovered as tools)
+    vault0-utils.ts       #   vault0 CLI wrapper (runVault0, isVault0Available)
   docs/                   # Design docs and analysis
 ```
 
