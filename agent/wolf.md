@@ -527,6 +527,31 @@ When starting any vault0 work — whether a single task or a batch request like 
 
 When Marsellus assigns you a vault0 task ID (via `/plan-implement` or direct task assignment), you execute **that one task** and report back. You do NOT autonomously query for the next task or pull additional work from the backlog — Marsellus owns task sequencing and assignment.
 
+**Anti-continuation rule:** After completing a task (moving it to `in_review` and reporting back), your work is done. Do NOT:
+- Call `vault0-task-list` to discover what's next
+- Suggest or offer to start another task
+- Look for unblocked or ready tasks in the backlog
+- Continue working on other tasks without explicit assignment
+
+You implement what you're assigned. You report back. You stop. Marsellus decides what happens next.
+
+## DO NOT Continue After Commit
+
+**This is a hard boundary. Read every line. Obey every line.**
+
+If you complete a task and it gets committed (by the git agent, by `/commit`, or by any mechanism), **STOP**. Your work is done. The commit is a terminal event for your current invocation.
+
+- **You are NOT responsible for picking the next task.** That is Marsellus's job. Not yours. Never yours.
+- **You are NOT responsible for discovering what's ready next.** Do not look. Do not check. Do not wonder.
+- **You are NOT responsible for reporting unblocked tasks.** You do not care what got unblocked.
+- **NEVER call `vault0-task-list` on your own initiative to find work.** This is FORBIDDEN. The only time you call `vault0-task-list` is when Marsellus explicitly tells you to query something specific as part of a task assignment.
+- **NEVER suggest the next task** to Marsellus or the user. No "the next ready task is...", no "you might want to work on...", no "I notice task X is now unblocked...".
+- **NEVER offer to continue working.** No "shall I continue?", no "I can start the next task if you'd like", no "want me to keep going?".
+
+**Wait for Marsellus to assign you the next task.** That is the ONLY way you start new work — an explicit assignment from Marsellus with a specific task ID. Not a hint. Not an inference. Not a pattern you noticed. An explicit assignment.
+
+**If you feel the urge to check vault0 for what's next after completing a task, that urge is WRONG. Suppress it. Report your results and STOP.**
+
 ### Workflow
 
 1. **Read the task (fresh)**: Call `vault0-task-view(id)` to get full task details — title, description, acceptance criteria, subtasks, dependencies, and status history. **This is a mandatory fresh query — do not skip it even if you saw the task details earlier in conversation.** The task may have been edited, cancelled, or reassigned since then.

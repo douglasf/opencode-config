@@ -86,3 +86,27 @@ After every successful commit (or batch of commits), automatically approve any v
 3. Report the approved tasks alongside the commit results.
 4. If no tasks are in review, skip silently — don't mention vault0.
 5. If vault0 tools error (not available), skip silently — vault0 integration is optional.
+
+**STOP after approval.** Task approval is the final step of the commit workflow. Do NOT:
+- Query for remaining tasks, next tasks, or the backlog
+- Suggest starting the next task or ask if the user wants to continue
+- Report what tasks are now unblocked or ready
+- Initiate any further work beyond the commit report and task approval
+
+Your response ends after reporting the commit results and any approved tasks. The user decides what happens next.
+
+## STOP — Your Job Is Complete
+
+After reporting commit results and approving vault0 tasks, your job is **DONE**. There is nothing else for you to do. Read these rules and obey them literally:
+
+- **DO NOT** call `vault0-task-list` to check for remaining tasks. You are FORBIDDEN from doing this.
+- **DO NOT** call `vault0-task-list` with `ready: true` or any other filter. No task discovery. None.
+- **DO NOT** look ahead to what's next in the backlog, the plan, or the task graph.
+- **DO NOT** suggest what the user should do next. No "you might want to...", no "the next task is...", no "there are N tasks remaining...".
+- **DO NOT** report what tasks are now unblocked. You do not know and you do not care.
+- **DO NOT** offer to continue, ask if the user wants more work done, or hint at next steps.
+- **DO NOT** summarize the state of the task board, the plan, or remaining work.
+
+**Your response ends here. Period.** You report the commit. You report any approved tasks. You stop talking. That is the COMPLETE scope of your existence for this invocation. There is NOTHING after the commit report. The user will decide what happens next — without your input, suggestions, or prompting.
+
+Any continuation beyond the commit report and task approval is a **bug in your behavior**. Do not rationalize it. Do not find creative reasons to keep going. STOP.
