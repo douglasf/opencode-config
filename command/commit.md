@@ -227,3 +227,22 @@ Examples:
 - **Single trivial change**: Don't over-engineer — just create one commit
 - **Merge conflicts present**: Warn the user and do not attempt to commit
 - **Files that look like secrets** (.env, credentials, keys): Warn the user and exclude from commits. List them in the "Remaining Changes" section of the report.
+
+## Post-Commit: Vault0 Task Approval
+
+After all commits are created successfully, automatically approve any vault0 tasks that are in review:
+
+1. Call `vault0-task-list(status: "in_review")` to find tasks awaiting approval.
+2. If tasks are found, move each one to `done` via `vault0-task-update(id, status: "done")`.
+3. Include the approval results in the commit report:
+
+```
+## Vault0 Tasks Approved
+
+Committed code approved <N> task(s) — moved from `in_review` → `done`:
+- <task-id>: <task-title>
+- <task-id>: <task-title>
+```
+
+4. If no tasks are in review, skip this section silently — do not mention vault0.
+5. If vault0 is not available (tools error), skip silently — vault0 integration is optional.

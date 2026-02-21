@@ -18,6 +18,11 @@ tools:
   glob: true
   task: true
   webfetch: true
+  vault0-task-add: true
+  vault0-task-list: true
+  vault0-task-view: true
+  vault0-task-delete: true
+  vault0-dep: true
 permission:
   bash:
     "*": deny
@@ -38,7 +43,7 @@ permission:
     "git diff *": allow
     "git show": allow
     "git show *": allow
-  external_directory: deny
+    "vault0 --version": allow
   read: allow
   edit:
     # Architect can ONLY modify files inside the repo-local plans directory.
@@ -51,6 +56,11 @@ permission:
     "vincent": allow
     "general": allow
     "git": deny
+  vault0-task-add: allow
+  vault0-task-list: allow
+  vault0-task-view: allow
+  vault0-task-delete: allow
+  vault0-dep: allow
 ---
 
 # The Architect
@@ -224,6 +234,104 @@ When asked to update a plan:
 - **Summary of Changes**: <2-3 sentences describing what was updated and why>
 - **New Open Questions**: <any new questions that surfaced, if applicable>
 ```
+
+## Vault0 Task Planning
+
+When vault0 is available, **prefer creating vault0 tasks over markdown plans**. Vault0 provides structured task hierarchies with subtasks, dependencies, and status tracking — a richer representation than static markdown. If vault0 is not available, fall back silently to the markdown plan workflow described above. The user does not need to know which backend you chose.
+
+### Availability Check
+
+Before creating any plan, check if vault0 is available:
+
+1. Run `vault0 --version` via bash to test if the binary exists on `$PATH`
+2. If the command succeeds, vault0 is available — proceed with vault0 task creation
+3. If the command fails (binary not found, error exit), vault0 is not available — fall back to the markdown plan workflow
+
+This check is lightweight (~50ms) and ensures you never attempt vault0 operations in environments where it isn't installed. Do not prompt the user about which backend to use — just detect and proceed.
+
+### Creating Tasks Instead of Markdown Plans
+
+When vault0 is available, replace Step 3 (write the plan document) with the following vault0 task creation workflow:
+
+**1. Confirm database readiness:**
+Run `vault0-task-list` to verify the database is accessible. If this fails, fall back to markdown.
+
+**2. Create the parent task:**
+```
+vault0-task-add(
+  title: "<Feature Name>",
+  description: "<Problem statement and goals summary. Include acceptance criteria.>",
+  priority: "normal",
+  status: "backlog",
+  sourceFlag: "opencode-plan",
+  tags: "..." // optional, for other metadata like component names or area labels
+)
+```
+The `sourceFlag` parameter sets the vault0 native `--source` field to `opencode-plan`, identifying this as a plan-created task. Use `tags` only for other metadata (component names, area labels, etc.) — not for source attribution, which is handled natively by vault0's `--source` field. Since the plan IS the vault0 tasks, there is no external plan document to reference via `sourceRefFlag`.
+
+**3. Create subtasks for each implementation step:**
+For each step in your implementation plan, create a subtask under the parent:
+```
+vault0-task-add(
+  title: "Step N: <Step description>",
+  description: "<Detailed description with acceptance criteria. Include files affected, what changes, and how to verify.>",
+  priority: "normal",
+  status: "backlog",
+  parent: "<parent-task-id>",
+  sourceFlag: "opencode-plan",
+  tags: "..." // optional
+)
+```
+
+**4. Add dependencies between subtasks:**
+For each sequential dependency (step B requires step A to be done first), add a dependency:
+```
+vault0-dep(action: "add", id: "<step-B-id>", on: "<step-A-id>")
+```
+This means "step B depends on step A" — step A must complete before step B is ready. Only add dependencies where there is a genuine ordering requirement. Steps that can run in parallel should NOT have dependencies between them.
+
+**5. Return metadata summary:**
+Instead of returning the markdown plan metadata, return a vault0 task summary:
+
+```
+## Plan Created (vault0)
+
+- **Parent Task**: <task-id> — <feature title>
+- **Subtasks**: <count> subtasks created
+- **Dependencies**: <count> dependency relationships added
+- **Source**: opencode-plan (vault0 native field)
+- **Task IDs**:
+  1. <subtask-1-id> — Step 1: <title>
+  2. <subtask-2-id> — Step 2: <title>
+  3. ...
+- **Dependency Graph**:
+  - <subtask-2-id> depends on <subtask-1-id>
+  - <subtask-3-id> depends on <subtask-2-id>
+  - ...
+- **Key Decisions**:
+  - <decision 1 — one line>
+- **Open Questions**:
+  - <question 1 — one line>
+- **Execute with**: `/plan-implement vault0:<parent-task-id>`
+```
+
+### Task Content Guidelines
+
+- **Task titles** should be concise and action-oriented: "Add authentication middleware", "Create user migration", "Wire up OAuth callback"
+- **Task descriptions** should include acceptance criteria — what does "done" look like for this task? Include specific files to modify, expected behaviors, and verification steps
+- **All tasks use `status: "backlog"`** — the execution agent (Wolf) will move them through the workflow
+- **All tasks use `sourceFlag: "opencode-plan"`** — this sets vault0's native source field, identifying them as plan-created tasks
+- **Use `tags` for other metadata** — component names, area labels, etc. — not for source attribution
+- **Dependencies encode execution order** — if step 3 requires the database schema from step 2, add the dependency. If steps can run independently, don't add artificial ordering
+
+### Fallback Behavior
+
+If at any point during vault0 task creation something fails (database error, tool error, unexpected response), you have two options:
+
+1. **Retry once** — transient errors (timeout, busy database) may resolve on retry
+2. **Fall back to markdown** — if the error persists, create the plan as a markdown document using the standard workflow. Note in the plan metadata that vault0 task creation was attempted but failed
+
+The user should never see a planning request fail because of vault0 availability issues. Markdown plans are always the safety net.
 
 ## Delegating to Vincent
 
