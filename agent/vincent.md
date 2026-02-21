@@ -29,6 +29,11 @@ permission:
     # ── Filesystem exploration ──
     "ls": allow
     "ls *": allow
+    "ls -a": allow
+    "ls -l": allow
+    "ls -la": allow
+    "ls -lah": allow
+    "ls -A": allow
     "pwd": allow
     "cat *": allow
     "head *": allow
