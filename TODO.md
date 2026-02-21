@@ -24,4 +24,6 @@
 
 - [ ] **F9: Move TODO.md to .opencode/ directory for local tracking** — Relocate TODO.md from the repository root to .opencode/TODO.md so that TODO items are treated as local workspace state rather than version-controlled project artifacts. This keeps personal task tracking separate from committed project files. May require updating any scripts or tools that reference the root-level TODO.md path, and adding .opencode/TODO.md to .gitignore if not already present.
 
+- [ ] **F10: Testing tools**
+
 ## Completed
