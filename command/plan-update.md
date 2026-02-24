@@ -1,6 +1,6 @@
 ---
 description: Update an existing plan through the Architect
-agent: jules
+agent: architect
 ---
 
 Update an existing plan by gathering user intent, then delegating all work to the Architect.
@@ -25,7 +25,7 @@ Wait for their response before proceeding.
 
 ## Step 2 — Delegate to Architect
 
-Once you have the plan name and the requested changes, do the following yourself (you ARE the Architect):
+Once you have the plan name and the requested changes:
 
 1. **Locate the plan file:**
    - The plan lives at: `.opencode/plans/<plan-name>.md` (relative to repo root)
@@ -40,6 +40,6 @@ Once you have the plan name and the requested changes, do the following yourself
 
 ## Important
 
-- This command ONLY gathers user intent, then delegates everything to the Architect.
+- This command is routed directly to the Architect, who handles both intent gathering and plan updates.
 - Do NOT fall back to a general-purpose agent. All work stays within the Architect.
 - Do NOT run git commits, pushes, or PRs.

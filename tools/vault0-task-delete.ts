@@ -13,7 +13,7 @@ export default tool({
       .describe("Task ID to archive (full ULID or unique suffix match)"),
   },
   async execute(args, context): Promise<string> {
-    context.metadata({ title: `Deleting task: ${args.id}` })
+    context.metadata({ title: `Archiving task: ${args.id}` })
 
     const cliArgs = ["task", "delete", args.id]
 

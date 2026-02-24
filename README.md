@@ -106,7 +106,7 @@ Each agent has a strict permission boundary enforced by the tool and bash permis
 | Agent | File Read | File Write/Edit | Bash | Git (read) | Git (write) | Task Delegation | Web Access |
 |---|---|---|---|---|---|---|---|
 | **Marsellus** | Limited (prompt context only) | No | No | Yes (status, log) | No | Wolf, Vincent | No |
-| **Wolf** | Full | Full | Extensive allow-list (read-only + builds/tests) | Yes | No | Vincent | No |
+| **Wolf** | Full | Full | Extensive allow-list (read-only + builds/tests) | Yes | No | Vincent | Yes |
 | **Vincent** | Full | No | Read-only exploration only | Yes | No | No | Yes |
 | **Architect** | Full | Plans directory only (`.opencode/plans/`) | Minimal (ls, cat, git read) | Yes | No | Vincent | Yes |
 | **Jules** | Plans directory only | No | Plan storage + git context | Yes | No | Architect, Wolf | No |

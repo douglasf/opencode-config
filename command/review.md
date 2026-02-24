@@ -1,5 +1,6 @@
 ---
 description: Review changes in a GitHub PR by delegating to Vincent
+agent: marsellus
 ---
 
 Review the changes in a GitHub Pull Request by delegating the full analysis to Vincent, the deep codebase investigator.

@@ -1,5 +1,6 @@
 ---
 description: List all plans for the current repository
+agent: wolf
 ---
 
 List all plans stored for the current repository.
