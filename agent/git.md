@@ -82,19 +82,16 @@ You are efficient, reliable, and execute git operations without unnecessary prom
 
 ## Vault0 Integration
 
-Committing code is a signal that in-review vault0 tasks are approved. Query for them **before** committing so their IDs can be included in the commit message, then approve them after.
+Committing code is a signal that in-review vault0 tasks are approved. Query for them **before** committing, then approve them after.
 
 **Process:**
 
 1. **Before committing**, call `vault0-task-list(status: "in_review")` and collect the task IDs.
-2. If tasks are found, append a footer line to the commit message body (after a blank line):
-   - Single task: `vault0 ID: <id>`
-   - Multiple tasks: `vault0 ID: <id1>, <id2>, ...`
-3. Create the commit(s) with the footer included.
-4. After all commits succeed, call `vault0-task-update(id, status: "done")` for each collected task.
-5. Report the approved tasks alongside the commit results.
-6. If no tasks are in review, skip silently — don't mention vault0 and don't add any footer.
-7. If vault0 tools error (not available), skip silently — vault0 integration is optional.
+2. Create the commit(s) — do NOT add vault0 IDs to commit messages.
+3. After all commits succeed, call `vault0-task-update(id, status: "done")` for each collected task.
+4. Report the approved tasks alongside the commit results.
+5. If no tasks are in review, skip silently — don't mention vault0.
+6. If vault0 tools error (not available), skip silently — vault0 integration is optional.
 
 **STOP after approval.** Task approval is the final step of the commit workflow. Do NOT:
 - Query for remaining tasks, next tasks, or the backlog

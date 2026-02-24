@@ -25,28 +25,26 @@
   "$schema": "https://opencode.ai/config.json",
 
   // ======================================================================
-  // Model configuration - prevent inheriting defaults from main config
+  // Model configuration - match strict conf models
   // ======================================================================
-  // Coordination agents use kimi-k2.5-free (fast)
-  // Heavy-lifting agents stay on opus (set explicitly per-agent below)
-  "model": "opencode/kimi-k2.5-free",
-  "small_model": "opencode/kimi-k2.5-free",
+  "model": "github-copilot/claude-haiku-4.5",
+  "small_model": "github-copilot/claude-haiku-4.5",
   "keybinds": {
     "leader": "ctrl+s"
   },
 
   "agent": {
     // ======================================================================
-    // COORDINATION AGENTS - kimi-k2.5-free (fast routing/delegation)
+    // COORDINATION AGENTS - haiku (fast routing/delegation)
     // ======================================================================
     "marsellus": {
-      "model": "opencode/kimi-k2.5-free"
+      "model": "github-copilot/claude-haiku-4.5"
     },
     "jules": {
-      "model": "opencode/kimi-k2.5-free"
+      "model": "github-copilot/claude-haiku-4.5"
     },
     "quick-answer": {
-      "model": "opencode/kimi-k2.5-free"
+      "model": "github-copilot/claude-haiku-4.5"
     },
 
     // ======================================================================
@@ -527,7 +525,8 @@
       "model": "github-copilot/claude-opus-4.6"
     },
     "git": {
-      "model": "github-copilot/claude-opus-4.6"
+      "model": "github-copilot/claude-opus-4.6",
+      "prompt": "When committing code with vault0 tasks in review, append a footer line to the commit message body (after a blank line) with the vault0 task IDs:\n- Single task: `vault0 ID: <id>`\n- Multiple tasks: `vault0 ID: <id1>, <id2>, ...`\nThis is for traceability in personal projects."
     }
   }
 }
