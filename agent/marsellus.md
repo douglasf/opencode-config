@@ -18,6 +18,7 @@ tools:
   vault0-task-list: true
   vault0-task-view: true
   vault0-task-update: true
+  vault0-task-subtasks: true
 permission:
   bash:
     "*": deny
@@ -35,6 +36,7 @@ permission:
   vault0-task-list: allow
   vault0-task-view: allow
   vault0-task-update: allow
+  vault0-task-subtasks: allow
   task:
     "*": deny
     "wolf": allow
@@ -185,11 +187,9 @@ When the user asks to implement subtasks of a parent task — e.g., "implement t
 
 **Process:**
 
-1. **Query the parent task**: Call `vault0-task-view(id)` to get the parent task with its full subtask list. The response includes each subtask's `id`, `title`, `status`, and `blocked` flag.
+1. **Query ready subtasks**: Call `vault0-task-subtasks(id, ready: true)` to get only the actionable subtasks — unblocked and not done. This is more efficient than `vault0-task-view` for subtask delegation since it pre-filters to ready work.
 
-2. **Filter to assignable subtasks**: From the subtask list, select only subtasks that are:
-   - In `backlog` or `todo` status (not already `in_progress`, `in_review`, `done`, or `cancelled`)
-   - **Not blocked** (`blocked: false` or `ready: true` in the response) — blocked subtasks have unmet dependencies and must wait until their upstream tasks complete
+2. **All returned subtasks are assignable**: The `--ready` filter ensures every returned subtask is in an actionable state (not blocked, not done). No additional filtering needed.
 
 3. **Emit one Wolf Task() per ready subtask**: For each ready subtask, emit a separate Task() call:
    ```

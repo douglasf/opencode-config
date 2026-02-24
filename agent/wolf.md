@@ -20,10 +20,12 @@ tools:
   vault0-task-list: true
   vault0-task-view: true
   vault0-task-update: true
+  vault0-task-subtasks: true
 permission:
   vault0-task-list: allow
   vault0-task-view: allow
   vault0-task-update: allow
+  vault0-task-subtasks: allow
   bash:
     # ═══════════════════════════════════════════════════════════
     # DEFAULT-DENY: Only explicitly whitelisted commands run.

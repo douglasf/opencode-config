@@ -22,6 +22,7 @@ tools:
   vault0-task-list: true
   vault0-task-view: true
   vault0-task-delete: true
+  vault0-task-subtasks: true
   vault0-dep: true
 permission:
   bash:
@@ -63,6 +64,7 @@ permission:
   vault0-task-list: allow
   vault0-task-view: allow
   vault0-task-delete: allow
+  vault0-task-subtasks: allow
   vault0-dep: allow
 ---
 
