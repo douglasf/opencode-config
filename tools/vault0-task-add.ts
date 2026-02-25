@@ -25,6 +25,10 @@ export default tool({
       .string()
       .optional()
       .describe("Parent task ID for creating subtasks"),
+    type: tool.schema
+      .enum(["feature", "bug", "analysis"])
+      .optional()
+      .describe("Task type"),
     tags: tool.schema
       .string()
       .optional()
@@ -52,6 +56,7 @@ export default tool({
     if (args.priority) cliArgs.push("--priority", args.priority)
     if (args.status) cliArgs.push("--status", args.status)
     if (args.parent) cliArgs.push("--parent", args.parent)
+    if (args.type) cliArgs.push("--type", args.type)
     if (args.tags) cliArgs.push("--tags", args.tags)
     if (args.sourceFlag) cliArgs.push("--source", args.sourceFlag)
     if (args.sourceRefFlag) cliArgs.push("--source-ref", args.sourceRefFlag)

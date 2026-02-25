@@ -20,11 +20,13 @@ tools:
   vault0-task-list: true
   vault0-task-view: true
   vault0-task-update: true
+  vault0-task-move: true
   vault0-task-subtasks: true
 permission:
   vault0-task-list: allow
   vault0-task-view: allow
   vault0-task-update: allow
+  vault0-task-move: allow
   vault0-task-subtasks: allow
   bash:
     # ═══════════════════════════════════════════════════════════
@@ -547,7 +549,8 @@ When starting any vault0 work — whether a single task or a batch request like 
 ## Vault0 Tool Usage Rules
 
 - **`vault0-task-add`** is **only** for creating new tasks. Never use it to modify existing tasks.
-- **`vault0-task-update`** is for modifying existing tasks — changing status, priority, description, title, or tags. Always provide the task ID.
+- **`vault0-task-update`** is for editing task **metadata only** — title, description, priority, tags, type, solution, and dependencies (`depAdd`/`depRemove`). It does NOT change status. Always provide the task ID.
+- **`vault0-task-move`** is for **status transitions** — moving tasks through workflow stages (backlog → todo → in_progress → in_review → done). It also accepts an optional `solution` parameter for recording solution notes (typically when moving to `done`). Always provide the task ID and target status.
 - **Valid priority values**: `"critical"`, `"high"`, `"normal"`, `"low"`. No other values (e.g., `"MEDIUM"`, `"urgent"`, `"highest"`) are valid — the tool will reject them.
 
 ## Vault0 Task Execution
@@ -570,9 +573,9 @@ If a commit occurs (by the git agent, `/commit`, or any mechanism), **STOP**. Th
 
 1. **Read the task (fresh)**: Call `vault0-task-view(id)` to get full task details — title, description, acceptance criteria, subtasks, dependencies, and status history. **This is a mandatory fresh query — do not skip it even if you saw the task details earlier in conversation.** The task may have been edited, cancelled, or reassigned since then.
 2. **Verify the task is assignable**: Confirm the task status is `backlog` or `todo`. If it is already `in_progress`, `in_review`, `done`, or `cancelled`, do NOT claim it — report back to Marsellus that the task is no longer assignable.
-3. **Claim the task**: Call `vault0-task-update(id, status: "in_progress")` to signal you've started work.
+3. **Claim the task**: Call `vault0-task-move(id, status: "in_progress")` to signal you've started work.
 4. **Implement**: Execute the work described in the task. Read the description for acceptance criteria, make code changes, run tests, etc. — use all your normal tools.
-5. **Submit for review**: Call `vault0-task-update(id, status: "in_review")` when implementation is complete. Do NOT move directly to `done` — the review gate requires explicit approval.
+5. **Submit for review**: Call `vault0-task-move(id, status: "in_review")` when implementation is complete. Do NOT move directly to `done` — the review gate requires explicit approval.
 6. **Report back to Marsellus**: Report the task is **ready for review**. Summarize what was done, any issues encountered, whether all acceptance criteria were met, and any observations or follow-up needs.
 
 ### Task Reading Guidelines

@@ -233,7 +233,7 @@ Examples:
 After all commits are created successfully, automatically approve any vault0 tasks that are in review:
 
 1. Call `vault0-task-list(status: "in_review")` to find tasks awaiting approval.
-2. If tasks are found, move each one to `done` via `vault0-task-update(id, status: "done")`.
+2. If tasks are found, move each one to `done` via `vault0-task-move(id, status: "done")`.
 3. Include the approval results in the commit report:
 
 ```

@@ -21,9 +21,8 @@ tools:
   vault0-task-add: true
   vault0-task-list: true
   vault0-task-view: true
-  vault0-task-delete: true
+  vault0-task-update: true
   vault0-task-subtasks: true
-  vault0-dep: true
 permission:
   bash:
     "*": deny
@@ -63,9 +62,8 @@ permission:
   vault0-task-add: allow
   vault0-task-list: allow
   vault0-task-view: allow
-  vault0-task-delete: allow
+  vault0-task-update: allow
   vault0-task-subtasks: allow
-  vault0-dep: allow
 ---
 
 # The Architect
@@ -123,7 +121,7 @@ You can run multiple Vincent tasks in parallel for independent investigation are
 ### Vault0 Tool Usage Rules
 
 - **`vault0-task-add`** is **only** for creating new tasks. Never use it to modify existing tasks.
-- **`vault0-task-update`** is for modifying existing tasks — changing status, priority, description, title, or tags. Always provide the task ID.
+- **`vault0-task-update`** is for editing task **metadata only** — title, description, priority, tags, type, solution, and dependencies (`depAdd`/`depRemove`). It does NOT change status. Always provide the task ID.
 - **Valid priority values**: `"critical"`, `"high"`, `"normal"`, `"low"`. No other values (e.g., `"MEDIUM"`, `"urgent"`, `"highest"`) are valid — the tool will reject them.
 
 ### Step 3: Create Plan Tasks
@@ -200,9 +198,9 @@ vault0-task-add(
 
 #### 3e. Add Dependencies Between Subtasks
 
-For each sequential dependency (step B requires step A to be done first), add a dependency:
+For each sequential dependency (step B requires step A to be done first), add a dependency using `vault0-task-update`:
 ```
-vault0-dep(action: "add", id: "<step-B-id>", on: "<step-A-id>")
+vault0-task-update(id: "<step-B-id>", depAdd: "<step-A-id>")
 ```
 This means "step B depends on step A" — step A must complete before step B is ready. Only add dependencies where there is a genuine ordering requirement. Steps that can run in parallel should NOT have dependencies between them.
 
@@ -278,7 +276,7 @@ Do NOT include code snippets, file contents, or detailed findings in your return
 
 When asked to update a plan:
 
-**Vault0 tasks:** Use `vault0-task-view` to read existing tasks, then `vault0-task-update` to modify titles, descriptions, priorities, or status. Add or remove subtasks and dependencies as needed. Return a summary of what changed.
+**Vault0 tasks:** Use `vault0-task-view` to read existing tasks, then `vault0-task-update` to modify titles, descriptions, priorities, tags, or dependencies. Add or remove subtasks as needed. Return a summary of what changed.
 
 **Markdown plans:** Read the existing plan from disk, investigate any new areas needed (directly or via Vincent), modify the relevant sections, update the `Updated` date, save back to disk, and return metadata showing what changed.
 

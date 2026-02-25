@@ -160,7 +160,7 @@ Before starting execution, verify vault0 is available:
    Task(
      subagent_type: "wolf",
      description: "vault0 task: <subtask title>",
-     prompt: "You are executing a vault0 task.\n\n## Parent Task\n<parent task title and description>\n\n## Your Task\nTask ID: <subtask-id>\nTitle: <subtask title>\nDescription: <subtask description>\nPriority: <priority>\n\n## Instructions\n1. Read the task details with `vault0-task-view <subtask-id>`\n2. Update status to in_progress: `vault0-task-update(id: '<subtask-id>', status: 'in_progress')`\n3. Implement the work described in the task\n4. When complete, submit for review: `vault0-task-update(id: '<subtask-id>', status: 'in_review')` — do NOT move to done, the review gate handles that\n5. Report back what you accomplished, any issues, and any observations\n\nImplement ONLY this single task. Do not work on other tasks."
+     prompt: "You are executing a vault0 task.\n\n## Parent Task\n<parent task title and description>\n\n## Your Task\nTask ID: <subtask-id>\nTitle: <subtask title>\nDescription: <subtask description>\nPriority: <priority>\n\n## Instructions\n1. Read the task details with `vault0-task-view <subtask-id>`\n2. Claim the task: `vault0-task-move(id: '<subtask-id>', status: 'in_progress')`\n3. Implement the work described in the task\n4. When complete, submit for review: `vault0-task-move(id: '<subtask-id>', status: 'in_review')` — do NOT move to done, the review gate handles that\n5. Report back what you accomplished, any issues, and any observations\n\nImplement ONLY this single task. Do not work on other tasks."
    )
    ```
 
