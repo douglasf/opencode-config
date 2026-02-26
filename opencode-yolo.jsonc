@@ -526,7 +526,6 @@
     },
     "git": {
       "model": "github-copilot/claude-opus-4.6",
-      "prompt": "When committing code with vault0 tasks in review, append a footer line to the commit message body (after a blank line) with the vault0 task IDs:\n- Single task: `vault0 ID: <id>`\n- Multiple tasks: `vault0 ID: <id1>, <id2>, ...`\nThis is for traceability in personal projects."
     }
   }
 }
