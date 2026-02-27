@@ -17,14 +17,14 @@ You can also switch to the **Jules** agent (via tab) when you want to think thro
 - **Committing** — the orchestrator will *never* commit on its own. When you're happy with the changes, use `/commit` to stage and commit with an auto-generated message. Use `/push` and `/pr` for the rest of the git workflow.
 - **Code review** — use `/review` to get a review of your staged/unstaged changes before committing.
 
-### Strict vs YOLO Mode
+### Strict vs YODO Mode
 
-By default, **strict mode** is active everywhere — the AI cannot run arbitrary commands or edit files without guardrails. This is what you want for work repos. For personal projects where speed matters more than safety, you can enable **YOLO mode** per repo (see instructions below). You can check which mode is active by looking for a `.opencode/opencode.jsonc` symlink in the project root.
+By default, **strict mode** is active everywhere — the AI cannot run arbitrary commands or edit files without guardrails. This is what you want for work repos. For personal projects where speed matters more than safety, you can enable **YODO mode** per repo (see instructions below). You can check which mode is active by looking for a `.opencode/opencode.jsonc` symlink in the project root.
 
 ### Things to Know
 
 - Wolf reports back what it did but does not commit. You always control when changes are committed.
-- If you're in strict mode and Wolf says it can't run a command, that's the guardrails working. Either switch to YOLO mode or run the command yourself.
+- If you're in strict mode and Wolf says it can't run a command, that's the guardrails working. Either switch to YODO mode or run the command yourself.
 - Slash commands (`/commit`, `/push`, `/pr`, `/review`, `/quick`) are the primary way to trigger specific workflows. Type `/` to see what's available.
 
 ## Structure
@@ -32,7 +32,7 @@ By default, **strict mode** is active everywhere — the AI cannot run arbitrary
 ```
 ~/.config/opencode/
   opencode.jsonc          # Global config (strict mode — default)
-  opencode-yolo.jsonc     # Relaxed config (YOLO mode — opt-in per repo)
+  opencode-yodo.jsonc     # Relaxed config (YODO mode — opt-in per repo)
   package.json            # Sole dependency: @opencode-ai/plugin
   bun.lock                # Bun lockfile
   agent/                  # Agent definitions (marsellus, wolf, vincent, jules, architect, git, quick-answer)
@@ -136,9 +136,9 @@ Each agent has a strict permission boundary enforced by the tool and bash permis
 
 This configuration supports two security modes for OpenCode:
 
-| | **Strict** (default) | **YOLO** (opt-in) |
+| | **Strict** (default) | **YODO** (opt-in) |
 |---|---|---|
-| **Activation** | Automatic everywhere | Symlink `opencode-yolo.jsonc` into repo's `.opencode/opencode.jsonc` |
+| **Activation** | Automatic everywhere | Symlink `opencode-yodo.jsonc` into repo's `.opencode/opencode.jsonc` |
 | **Bash for Wolf** | Default-deny, explicit allow-list (builds, tests, read-only tools) | Default-ask, broad allow-list |
 | **File editing** | Allowed (Wolf has full write/edit) | Allowed |
 | **Git mutations** | Denied (git agent only, via slash commands) | Allowed (except force-push/hard-reset) |
@@ -146,17 +146,47 @@ This configuration supports two security modes for OpenCode:
 | **Cloud CLIs** | Denied | Read-only allowed, mutations ask/deny |
 | **Use case** | Work repos, shared projects, anything with risk | Personal repos, experiments, throwaway projects |
 
-### Enabling YOLO Mode in a Repo
+### Enabling YODO Mode in a Repo
 
-YOLO mode uses a symlink so that all repos share a single source of truth. When you update `opencode-yolo.jsonc`, every YOLO-enabled repo picks up the change automatically.
+YODO mode uses a symlink so that all repos share a single source of truth. When you update `opencode-yodo.jsonc`, every YODO-enabled repo picks up the change automatically.
 
 ```bash
-# In the repo where you want YOLO mode:
+# In the repo where you want YODO mode:
 mkdir -p .opencode
-ln -s ~/.config/opencode/opencode-yolo.jsonc ./.opencode/opencode.jsonc
+ln -s ~/.config/opencode/opencode-yodo.jsonc ./.opencode/opencode.jsonc
 ```
 
 That's it. OpenCode reads `.opencode/opencode.jsonc` from the project directory, follows the symlink, and loads the relaxed config.
+
+### Enabling Websearch (Exa AI)
+
+The websearch and codesearch tools require the `OPENCODE_ENABLE_EXA=1` environment variable. Since the yodo config is symlinked into project directories, the env var needs to be set **in each target project**, not in the config directory itself.
+
+The recommended approach is [direnv](https://direnv.net/), which scopes env vars to a directory:
+
+```bash
+# One-time: install direnv and add the shell hook
+brew install direnv
+# Add hook to your shell — see https://direnv.net/docs/hook.html
+
+# In each project where you want websearch:
+echo 'OPENCODE_ENABLE_EXA=1' > .envrc
+direnv allow
+```
+
+Add `.envrc` to your global gitignore (same as `.opencode` above) so it doesn't leak into repos:
+
+```bash
+echo ".envrc" >> ~/.gitignore_global
+```
+
+**Alternative** — if you don't want direnv, export the var globally in your shell profile (`~/.zshrc` or `~/.bashrc`):
+
+```bash
+export OPENCODE_ENABLE_EXA=1
+```
+
+This enables websearch everywhere rather than per-project.
 
 ### Preventing Accidental Commits
 
@@ -168,7 +198,7 @@ echo ".opencode" >> ~/.gitignore_global
 git config --global core.excludesfile ~/.gitignore_global
 ```
 
-This ensures the YOLO symlink (and any other `.opencode` artifacts) never leak into version control.
+This ensures the YODO symlink (and any other `.opencode` artifacts) never leak into version control.
 
 ### When to Use Each Mode
 
@@ -178,7 +208,7 @@ This ensures the YOLO symlink (and any other `.opencode` artifacts) never leak i
 - Working with production code or sensitive data
 - You want the AI to ask before running commands
 
-**Use YOLO mode** when:
+**Use YODO mode** when:
 - Working on personal side projects
 - Prototyping or experimenting
 - Working in disposable repos (e.g., learning, demos)
@@ -187,14 +217,14 @@ This ensures the YOLO symlink (and any other `.opencode` artifacts) never leak i
 ### Verifying Which Mode Is Active
 
 ```bash
-# Check if a YOLO symlink exists in the current project:
+# Check if a YODO symlink exists in the current project:
 ls -la .opencode/opencode.jsonc
 
-# If it's a symlink pointing to opencode-yolo.jsonc → YOLO mode
+# If it's a symlink pointing to opencode-yodo.jsonc → YODO mode
 # If it doesn't exist → Strict mode (global defaults)
 ```
 
-To disable YOLO mode in a repo, remove the symlink:
+To disable YODO mode in a repo, remove the symlink:
 
 ```bash
 rm .opencode/opencode.jsonc
