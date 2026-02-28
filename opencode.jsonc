@@ -5,10 +5,10 @@
   "default_agent": "marsellus",
   "autoupdate": true,
   "plugin": [
-    "opencode-pty",
     "cc-safety-net",
     "opencode-notify"
   ],
+  "permission": {},
   "lsp": {
     "kotlin": {
       "command": ["kotlin-lsp", "--stdio"],
