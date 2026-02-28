@@ -49,6 +49,9 @@
     // ======================================================================
     "marsellus": {
       "model": "github-copilot/claude-haiku-4.5"
+      "permission": {
+        "websearch": "allow"
+      }
     },
     "jules": {
       "model": "github-copilot/claude-haiku-4.5"
