@@ -94,25 +94,20 @@ git add <file1> <file2> ...
 git commit -m "<type>(<scope>): <subject>"
 ```
 
-#### For hunk-level groups (only specific hunks from a file):
-When a file's hunks are split across multiple groups, use patch-based staging:
+#### When a file's changes span multiple groups:
+
+**Primary strategy — file-level grouping:** Assign the entire file to the group that best represents its dominant change. This is simpler, more reliable, and sufficient for the vast majority of cases. Prefer this approach.
+
+**Pipe-based staging (no temporary files):** When you must stage an entire file's diff without `git add`, pipe it directly:
 
 ```bash
-# Generate a patch file containing only the relevant hunks
-git diff <file> > /tmp/full.patch
-# Manually construct a patch with only the target hunks, or use:
-git diff <file> | <extract relevant hunks> > /tmp/group.patch
-git apply --cached /tmp/group.patch
+git diff <file> | git apply --cached -
+git commit -m "<message>"
 ```
 
-**Preferred approach for hunk-level staging:** Use `git add -p` logic via scripted input, or more reliably:
+**Do NOT attempt true hunk-level splitting** (extracting individual hunks from unified diffs). Parsing and reconstructing valid patch fragments in real-time is inherently fragile — incorrect line offsets or missing context silently corrupt the index. The marginal commit granularity is not worth the risk.
 
-1. For each hunk group, create a temporary patch file containing only the relevant hunks from the unified diff
-2. Apply it to the index: `git apply --cached <patch_file>`
-3. Commit: `git commit -m "<message>"`
-4. Clean up temp files
-
-**Practical fallback:** If hunk-level splitting is complex and error-prone for the specific changes, fall back to file-level grouping and note this in the report. Correctness is more important than granularity.
+**If changes genuinely need hunk-level separation**, note this in the report and recommend the user run `git rebase -i` afterward to split commits interactively. Correctness is more important than granularity.
 
 #### After all commits:
 1. Run `git log --oneline -N` (where N is the number of commits created) to verify
