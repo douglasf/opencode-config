@@ -18,6 +18,7 @@ tools:
   glob: true
   task: true
   webfetch: true
+  question: true
 permission:
   bash:
     "*": deny
@@ -44,6 +45,7 @@ permission:
   glob: allow
   grep: allow
   webfetch: allow
+  question: allow
   task:
     "vincent": allow
     "general": allow

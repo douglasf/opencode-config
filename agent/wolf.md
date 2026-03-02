@@ -17,7 +17,9 @@ tools:
   glob: true
   task: true
   webfetch: true
+  question: true
 permission:
+  question: allow
   bash:
     # ═══════════════════════════════════════════════════════════
     # DEFAULT-DENY: Only explicitly whitelisted commands run.
