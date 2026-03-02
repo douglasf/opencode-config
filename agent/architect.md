@@ -2,7 +2,7 @@
 description: >-
   The Architect. Combines deep investigation (via Vincent) with structured planning.
   Receives feature requests from Jules, investigates the codebase, and produces
-  complete plan documents. Returns only metadata summaries to the parent agent.
+  complete plans. Returns only metadata summaries to the parent agent.
 mode: subagent
 model: github-copilot/claude-opus-4.6
 temperature: 0.2

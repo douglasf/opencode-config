@@ -1,6 +1,6 @@
 ---
 description: >-
-  Deep codebase investigator powered by Claude Opus. Read-only — explores code, traces
+  Deep codebase investigator. Read-only — explores code, traces
   dependencies, researches documentation, and returns structured findings with
   file paths, line numbers, and code snippets. The deep investigation arm used by
   Marsellus, Wolf, and the Architect; findings inform orchestrators and planners.
