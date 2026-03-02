@@ -533,6 +533,11 @@
     },
     "vincent": {
       "model": "github-copilot/claude-opus-4.6"
+      "permission": {
+        "external_directory": {
+          "~/**": "allow"
+        }
+      }
     },
     "architect": {
       "model": "github-copilot/claude-opus-4.6"
