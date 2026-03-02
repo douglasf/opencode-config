@@ -28,6 +28,7 @@ permission:
     # ── Safe shell utilities (read-only) ──
     "ls": allow
     "ls *": allow
+    "rm *": ask
     "pwd": allow
     "echo *": allow
     "cat *": allow
