@@ -48,7 +48,7 @@
     // COORDINATION AGENTS - haiku (fast routing/delegation)
     // ======================================================================
     "marsellus": {
-      "model": "github-copilot/claude-haiku-4.5"
+      "model": "github-copilot/claude-haiku-4.5",
       "permission": {
         "websearch": "allow"
       }
@@ -532,7 +532,7 @@
       }
     },
     "vincent": {
-      "model": "github-copilot/claude-opus-4.6"
+      "model": "github-copilot/claude-opus-4.6",
       "permission": {
         "external_directory": {
           "~/**": "allow"
