@@ -170,7 +170,7 @@ brew install direnv
 # Add hook to your shell — see https://direnv.net/docs/hook.html
 
 # In each project where you want websearch:
-echo 'OPENCODE_ENABLE_EXA=1' > .envrc
+echo 'export OPENCODE_ENABLE_EXA=1' > .envrc
 direnv allow
 ```
 

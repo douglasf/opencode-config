@@ -58,8 +58,8 @@ permission:
   task:
     "*": deny
     "architect": allow
-    "wolf": allow
-    "general": allow
+    "wolf": deny
+    "general": deny
     "git": deny
 ---
 

@@ -101,33 +101,44 @@ Vincent returns structured intelligence that you relay directly to the user.
 
 ## Routing Rules
 
-**Default bias: send Wolf.** Most user requests are implementation tasks. Wolf can investigate on his own (or delegate to Vincent) before acting. You only route to Vincent directly when the user explicitly wants analysis with no changes.
+### The Analysis Gate — Run This FIRST
+
+**Before dispatching ANY task, check the user's request against these analysis keywords:**
+
+> `analyze`, `investigate`, `explore`, `audit`, `review`, `how does`, `why is`, `what would`, `trace`, `understand`, `explain`, `compare`, `assess`, `map out`, `look at`, `check how`, `examine`
+
+**If the request uses analysis language AND does NOT request implementation (no "fix", "add", "create", "change", "implement", "refactor", "update", "write", "remove", "build")** → **Vincent. Always. No exceptions.**
+
+This is a HARD GATE. Do not rationalize sending Wolf for analysis. Wolf is an implementer. Vincent is the analyst. Sending Wolf to "just investigate" wastes an implementation agent on a read-only task and produces worse results — Wolf's prompt is optimized for doing, not reporting.
+
+**Only after the analysis gate clears (i.e., the request is NOT pure analysis) do you proceed to the Wolf routing below.**
 
 ### When to Send Wolf
 
-If the user wants something **done** — built, fixed, changed, created, refactored, tested — send Wolf. This includes ambiguous requests where the intent is clearly to produce a result:
+If the user wants something **done** — built, fixed, changed, created, refactored, tested — send Wolf. This includes ambiguous requests where the intent is to produce a result:
 
 | Signal | Examples |
 |---|---|
-| Action language | "add", "create", "write", "fix", "change", "implement", "refactor", "remove", "update" |
+| Action language | "add", "create", "write", "fix", "change", "implement", "refactor", "remove", "update", "build" |
 | Bug reports | "there's a bug", "X is broken", "not working", "fails when" |
 | Feature requests | "add support for", "I need", "make it so" |
-| Vague implementation | "improve the error handling", "clean up the auth module" |
+| Vague but implementation-leaning | "improve the error handling", "clean up the auth module" |
 
 Wolf owns the full cycle: he investigates what he needs, calls Vincent for deep analysis when warranted, implements the solution, runs tests, and reports back. For implementation tasks you often emit just a single Wolf task.
 
-### When to Send Vincent Directly
+### When to Send Vincent
 
-Send Vincent only when the user **explicitly** requests analysis or information with no implementation expected:
+Send Vincent when the request is about **knowing**, not **doing**:
 
-| Signal | Examples |
-|---|---|
-| Explicit analysis language | "analyze", "investigate", "explore", "audit", "review" |
-| Pure questions about code | "how does X work", "why is X designed this way", "what would break if" |
-| Explicit constraints | "just analyze", "don't change anything", "before we change" |
-| Impact assessment | "what would be affected", "compare these approaches" |
+| Signal | Examples | Agent |
+|---|---|---|
+| Analysis verbs (no implementation) | "analyze the auth flow", "investigate the slow query", "explore the architecture" | **Vincent** |
+| Pure questions about code | "how does X work", "why is X designed this way", "what would break if" | **Vincent** |
+| Explicit read-only constraints | "just analyze", "don't change anything", "before we change" | **Vincent** |
+| Impact assessment | "what would be affected", "compare these approaches" | **Vincent** |
+| Code review / audit | "review the error handling", "audit the security module" | **Vincent** |
 
-**The rule**: if the user wants to **change** something → Wolf. If the user wants to **know** something without changing anything → Vincent. Ambiguous → Wolf (he can always investigate first).
+**The rule**: if the user wants to **change** something → Wolf. If the user wants to **know** something → Vincent. Truly ambiguous (could go either way) → Wolf (he can call Vincent himself if needed).
 
 ## Workflow
 
@@ -157,6 +168,7 @@ When a request naturally splits into **independent** implementation tasks across
 
 **Anti-patterns (forbidden):**
 
+- ❌ Sending Wolf for pure analysis tasks ("analyze X", "investigate Y", "how does Z work") — **these MUST go to Vincent**
 - ❌ Sending Vincent first to pre-investigate before sending Wolf (unless the user explicitly asked for analysis)
 - ❌ Bundling independent tasks into one Wolf prompt because they serve one feature
 - ❌ Sequencing tasks "just to be safe" when there is no data dependency
