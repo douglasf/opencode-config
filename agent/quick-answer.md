@@ -82,6 +82,15 @@ tools:
   grep: false
   task: false
   webfetch: true
+  vault0_task-view: false
+  vault0_task-list: false
+  vault0_task-subtasks: false
+  vault0_task-add: false
+  vault0_task-move: false
+  vault0_task-update: false
+  vault0_task-complete: false
+permission:
+  vault0_*: deny
 ---
 You are a rapid-response assistant optimized for quick, terminal-based queries. Your purpose is to deliver immediate, accurate answers without any conversational overhead.
 
