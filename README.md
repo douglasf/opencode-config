@@ -36,7 +36,7 @@ By default, **strict mode** is active everywhere — the AI cannot run arbitrary
   package.json            # Sole dependency: @opencode-ai/plugin
   bun.lock                # Bun lockfile
   agent/                  # Agent definitions (marsellus, wolf, vincent, jules, architect, git, quick-answer)
-  command/                # Slash commands (/commit, /push, /pr, /review, /quick, /plan-*)
+  command/                # Slash commands (/commit, /push, /pr, /review, /quick)
   plugins/                # Custom plugins (copilot-usage)
   tools/                  # Custom tools (progress reporting)
   docs/                   # Design docs and analysis
@@ -94,7 +94,7 @@ By default, **strict mode** is active everywhere — the AI cannot run arbitrary
 | **Marsellus** | Orchestrator — receives user requests, routes to the right agent. Never reads code, edits files, or runs commands (except read-only git for context). | Claude Haiku 4.5 | Primary | Wolf, Vincent |
 | **Wolf** | Executor — reads, writes, edits, searches, and runs commands. Does all implementation work. Owns the full cycle from investigation to delivery. | Claude Opus 4.6 | Subagent | Vincent |
 | **Vincent** | Investigator — deep read-only codebase analysis. Traces dependencies, maps architecture, returns structured findings with file paths and line numbers. Never modifies anything. | Claude Opus 4.6 | Subagent | *None* |
-| **Architect** | Planner — combines investigation (directly + via Vincent) with structured planning. Writes plan documents to `.opencode/plans/`. Returns only metadata summaries to caller. | Claude Opus 4.6 | Subagent | Vincent |
+| **Architect** | Planner — combines investigation (directly + via Vincent) with structured planning. Creates vault0 task hierarchies. Returns only metadata summaries to caller. | Claude Opus 4.6 | Subagent | Vincent |
 | **Jules** | Planning coordinator — interviews users about what to build, delegates investigation and planning to the Architect. Only sees plan metadata, never source code. | Claude Haiku 4.5 | Primary | Architect, Wolf |
 | **git** | Git specialist — commits, pushes, creates PRs. Only invoked via `/commit`, `/push`, `/pr` slash commands. Has full git write permissions but no file edit access. | Claude Opus 4.6 | Subagent | *None* |
 | **quick-answer** | Fast responder — concise answers to simple questions. Only has `webfetch` for lookups. No file access, no investigation. | Claude Haiku 4.5 | Subagent | *None* |
@@ -108,8 +108,8 @@ Each agent has a strict permission boundary enforced by the tool and bash permis
 | **Marsellus** | Limited (prompt context only) | No | No | Yes (status, log) | No | Wolf, Vincent | No |
 | **Wolf** | Full | Full | Extensive allow-list (read-only + builds/tests) | Yes | No | Vincent | Yes |
 | **Vincent** | Full | No | Read-only exploration only | Yes | No | No | Yes |
-| **Architect** | Full | Plans directory only (`.opencode/plans/`) | Minimal (ls, cat, git read) | Yes | No | Vincent | Yes |
-| **Jules** | Plans directory only | No | Plan storage + git context | Yes | No | Architect, Wolf | No |
+| **Architect** | Full | vault0 tasks only | Minimal (ls, cat, git read) | Yes | No | Vincent | Yes |
+| **Jules** | vault0 tasks only | No | Git context only | Yes | No | Architect, Wolf | No |
 | **git** | Full | No | Git + GitHub CLI (full write) | Yes | Yes | No | No |
 | **quick-answer** | No | No | No | No | No | No | Yes |
 
@@ -118,8 +118,8 @@ Each agent has a strict permission boundary enforced by the tool and bash permis
 - **The orchestrator never does work.** Marsellus has no grep, glob, write, or edit tools. It only delegates via `Task()`.
 - **Vincent is strictly read-only.** No file writes, no builds, no package installs, no code execution. Not even `make` or `npm run`.
 - **Wolf has broad bash access** in strict mode, but it's an explicit allow-list — default-deny with whitelisted commands for builds, tests, linting, and read-only tools. Dangerous operations (cloud mutations, remote access, package publishing, system commands) are denied.
-- **Architect can only write to `.opencode/plans/`** — it cannot modify source code.
-- **Jules cannot read source code** — its read access is restricted to plan files only.
+- **Architect can only create vault0 tasks** — it cannot modify source code.
+- **Jules cannot read source code** — its access is restricted to vault0 task metadata only.
 
 ## Slash Commands
 
@@ -128,9 +128,6 @@ Each agent has a strict permission boundary enforced by the tool and bash permis
 - `/pr` — Create a pull request
 - `/review` — Code review of staged/unstaged changes
 - `/quick` — Quick answer mode (fast, concise responses)
-- `/plan-list` — List all plans for the current repo
-- `/plan-implement <plan-name>` — Implement a plan step by step (delegates to Wolf)
-- `/plan-update <plan-name>` — Load a plan and update it through conversation
 
 ## Security Modes
 
@@ -231,7 +228,3 @@ rm .opencode/opencode.jsonc
 ```
 
 The repo immediately falls back to strict global defaults.
-
-## Plan Storage
-
-Plans are stored at `.opencode/plans/` in the repo root as markdown files. Plans are project-scoped — each repo has its own plan directory. Use `/plan-list` to see plans for the current repo.

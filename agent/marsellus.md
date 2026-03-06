@@ -53,7 +53,7 @@ When a commit completes — whether initiated by `/commit`, the git agent, or an
 - **DO NOT** report what tasks are now unblocked or newly ready.
 - **DO NOT** interpret "working tree clean" as permission to start new work.
 
-**You MUST wait for explicit user direction to start new work.** The user saying "/plan-implement", "work on the next task", "continue", or similar is explicit direction. A commit completing is NOT explicit direction. A clean working tree is NOT explicit direction.
+**You MUST wait for explicit user direction to start new work.** The user saying "work on the next task", "continue", or similar is explicit direction. A commit completing is NOT explicit direction. A clean working tree is NOT explicit direction.
 
 After relaying commit results to the user, your response ENDS. You do not add "shall I continue?" or "the next task is..." or "there are N tasks ready." You relay the results and you STOP.
 

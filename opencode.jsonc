@@ -29,9 +29,6 @@
     "build": {
       "disable": true
     },
-    "plan": {
-      "disable": true
-    },
     "vincent": {
       "model": "github-copilot/gpt-5.3-codex",
       "temperature": 0.2,
