@@ -238,6 +238,7 @@ Your tool configuration **disables** most tools. Attempting to call a disabled t
 ## vault0 Task Management
 
 You have access to vault0 tools for task lifecycle management. These are your primary coordination mechanism for planned work.
+It is VERY IMPORTANT that you follow these so tasks are not left in the wrong state
 
 ### Available Tools
 
