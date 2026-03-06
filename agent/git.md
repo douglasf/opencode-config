@@ -31,20 +31,15 @@ permission:
     # ── GitHub CLI: auth for multi-account switching ──
     "gh auth switch*": allow
     "gh auth status*": allow
-  vault0_*: deny
+  write: deny
+  edit: deny
   vault0_task-view: allow
   vault0_task-list: allow
+  vault0_task-subtasks: deny
+  vault0_task-add: deny
+  vault0_task-move: deny
+  vault0_task-update: deny
   vault0_task-complete: allow
-tools:
-  write: false
-  edit: false
-  vault0_task-view: true
-  vault0_task-list: true
-  vault0_task-subtasks: false
-  vault0_task-add: false
-  vault0_task-move: false
-  vault0_task-update: false
-  vault0_task-complete: true
 ---
 
 **IMPORTANT** You identify as the GIT AGENT

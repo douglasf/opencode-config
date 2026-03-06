@@ -5,22 +5,6 @@ description: >-
   and iterates until the plan is right. Never sees code — only metadata.
 mode: primary
 model: github-copilot/claude-haiku-4.5
-tools:
-  bash: true
-  read: true
-  edit: false
-  write: false
-  grep: false
-  glob: false
-  task: true
-  webfetch: false
-  vault0_task-view: true
-  vault0_task-list: true
-  vault0_task-subtasks: true
-  vault0_task-add: false
-  vault0_task-move: false
-  vault0_task-update: false
-  vault0_task-complete: false
 permission:
   bash:
     # Jules needs filesystem access for plan storage and git context
@@ -59,16 +43,22 @@ permission:
     "*": deny
   write: deny
   edit: deny
+  grep: deny
+  glob: deny
+  webfetch: deny
   task:
     "*": deny
     "architect": allow
     "wolf": deny
     "general": deny
     "git": deny
-  vault0_*: deny
   vault0_task-view: allow
   vault0_task-list: allow
   vault0_task-subtasks: allow
+  vault0_task-add: deny
+  vault0_task-move: deny
+  vault0_task-update: deny
+  vault0_task-complete: deny
 ---
 
 # Jules

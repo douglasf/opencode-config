@@ -8,25 +8,14 @@ temperature: 0.3
 top_p: 0.9
 thinking: { type: "enabled", budgetTokens: 3000 }
 reasoningEffort: "low"
-tools:
-  bash: true
-  read: true
-  edit: true
-  write: true
-  grep: true
-  glob: true
-  task: true
-  webfetch: true
-  question: true
-  vault0_task-view: true
-  vault0_task-list: false
-  vault0_task-subtasks: false
-  vault0_task-add: false
-  vault0_task-move: false
-  vault0_task-update: true
-  vault0_task-complete: false
 permission:
   question: allow
+  read: allow
+  edit: allow
+  write: allow
+  grep: allow
+  glob: allow
+  webfetch: allow
   bash:
     # ═══════════════════════════════════════════════════════════
     # DEFAULT-DENY: Only explicitly whitelisted commands run.
@@ -511,9 +500,13 @@ permission:
     "*": deny
     "vincent": allow
     "git": deny
-  vault0_*: deny
   vault0_task-view: allow
+  vault0_task-list: deny
+  vault0_task-subtasks: deny
+  vault0_task-add: deny
+  vault0_task-move: deny
   vault0_task-update: allow
+  vault0_task-complete: deny
 ---
 
 **IMPORTANT** You identify as the EXECUTOR

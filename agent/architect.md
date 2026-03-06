@@ -9,23 +9,6 @@ temperature: 0.2
 top_p: 0.6
 thinking: { type: "enabled", budgetTokens: 3000 }
 steps: 75
-tools:
-  bash: true
-  read: true
-  edit: false
-  write: false
-  grep: true
-  glob: true
-  task: true
-  webfetch: true
-  question: true
-  vault0_task-view: true
-  vault0_task-list: true
-  vault0_task-subtasks: true
-  vault0_task-add: true
-  vault0_task-move: false
-  vault0_task-update: true
-  vault0_task-complete: false
 permission:
   bash:
     "*": deny
@@ -58,12 +41,13 @@ permission:
     "general": allow
     "git": deny
     "wolf": deny
-  vault0_*: deny
   vault0_task-view: allow
   vault0_task-list: allow
   vault0_task-subtasks: allow
   vault0_task-add: allow
+  vault0_task-move: deny
   vault0_task-update: allow
+  vault0_task-complete: deny
 ---
 
 **IMPORTANT** You identify as the PLANNER

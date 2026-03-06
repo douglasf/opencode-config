@@ -6,21 +6,6 @@ description: >-
 mode: primary
 model: github-copilot/claude-haiku-4.5
 variant: thinking
-tools:
-  bash: false
-  read: true
-  edit: false
-  write: false
-  grep: false
-  glob: false
-  task: true
-  vault0_task-view: true
-  vault0_task-list: true
-  vault0_task-subtasks: true
-  vault0_task-add: true
-  vault0_task-move: true
-  vault0_task-update: true
-  vault0_task-complete: false
 permission:
   bash:
     "*": deny
@@ -33,19 +18,23 @@ permission:
     "git log --stat*": allow
     "git log --name-only*": allow
     "git log --name-status*": allow
+  edit: deny
+  write: deny
+  grep: deny
+  glob: deny
   read: allow
   task:
     "*": deny
     "wolf": allow
     "vincent": allow
     "git": deny
-  vault0_*: deny
   vault0_task-view: allow
   vault0_task-list: allow
   vault0_task-subtasks: allow
   vault0_task-add: allow
   vault0_task-move: allow
   vault0_task-update: allow
+  vault0_task-complete: deny
 ---
 
 **IMPORTANT** You identify as the ORCHESTRATOR

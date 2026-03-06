@@ -10,22 +10,6 @@ temperature: 0.2
 top_p: 0.8
 thinking: { type: "enabled", budgetTokens: 2500 }
 steps: 50
-tools:
-  bash: true
-  read: true
-  write: false
-  edit: false
-  grep: true
-  glob: true
-  task: false
-  webfetch: true
-  vault0_task-view: true
-  vault0_task-list: true
-  vault0_task-subtasks: true
-  vault0_task-add: false
-  vault0_task-move: false
-  vault0_task-update: false
-  vault0_task-complete: false
 permission:
   bash:
     # ═══════════════════════════════════════════════════════════
@@ -273,16 +257,21 @@ permission:
     "sed -i*": deny
     "sed --in-place*": deny
 
+  write: deny
+  edit: deny
   read: allow
   glob: allow
   grep: allow
   webfetch: allow
   task:
     "*": deny
-  vault0_*: deny
   vault0_task-view: allow
   vault0_task-list: allow
   vault0_task-subtasks: allow
+  vault0_task-add: deny
+  vault0_task-move: deny
+  vault0_task-update: deny
+  vault0_task-complete: deny
 ---
 
 # Vincent

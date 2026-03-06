@@ -8,7 +8,17 @@
     "cc-safety-net",
     "opencode-notify"
   ],
-  "permission": {},
+  "mcp": {
+    "vault0": {
+      "type": "local",
+      "command": [
+        "vault0",
+        "mcp",
+        "serve"
+      ],
+      "enabled": true
+    }
+  },
   "lsp": {
     "kotlin": {
       "command": ["kotlin-lsp", "--stdio"],

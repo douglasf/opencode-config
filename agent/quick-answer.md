@@ -72,25 +72,23 @@ model: github-copilot/claude-haiku-4.5
 temperature: 0.5
 textVerbosity: "medium"
 steps: 5
-tools:
-  bash: false
-  read: false
-  write: false
-  edit: false
-  list: false
-  glob: false
-  grep: false
-  task: false
-  webfetch: true
-  vault0_task-view: false
-  vault0_task-list: false
-  vault0_task-subtasks: false
-  vault0_task-add: false
-  vault0_task-move: false
-  vault0_task-update: false
-  vault0_task-complete: false
 permission:
-  vault0_*: deny
+  bash: deny
+  read: deny
+  write: deny
+  edit: deny
+  list: deny
+  glob: deny
+  grep: deny
+  task: deny
+  webfetch: allow
+  vault0_task-view: deny
+  vault0_task-list: deny
+  vault0_task-subtasks: deny
+  vault0_task-add: deny
+  vault0_task-move: deny
+  vault0_task-update: deny
+  vault0_task-complete: deny
 ---
 You are a rapid-response assistant optimized for quick, terminal-based queries. Your purpose is to deliver immediate, accurate answers without any conversational overhead.
 
