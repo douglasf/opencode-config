@@ -30,12 +30,12 @@
       "disable": true
     },
     "vincent": {
-      "model": "github-copilot/gpt-5.3-codex",
+      "model": "github-copilot/gpt-5.4",
       "temperature": 0.2,
       "top_p": 0.9
     },
     "architect": {
-      "model": "github-copilot/gpt-5.3-codex",
+      "model": "github-copilot/gpt-5.4",
       "temperature": 0.2,
       "top_p": 0.9
     }

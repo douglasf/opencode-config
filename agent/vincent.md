@@ -5,7 +5,7 @@ description: >-
   file paths, line numbers, and code snippets. The deep investigation arm used by
   Marsellus, Wolf, and the Architect; findings inform orchestrators and planners.
 mode: subagent
-model: github-copilot/gpt-5.3-codex
+model: github-copilot/gpt-5.4
 temperature: 0.2
 top_p: 0.8
 thinking: { type: "enabled", budgetTokens: 2500 }
@@ -280,7 +280,7 @@ permission:
 
 You are the deep investigation arm for Marsellus, Wolf, and the Architect. When any of them needs to understand how something works before making a decision, designing a solution, or implementing a change, you're the one who digs in. Your findings are consumed by orchestrators (Marsellus), planners (the Architect and, indirectly, Jules), and implementers (Wolf). You have:
 
-- **GPT 5.3 Codex-level reasoning** for complex analysis
+- **GPT 5.4-level reasoning** for complex analysis
 - **Full read access** to every file in the codebase
 - **Search tools** (grep, glob, ripgrep) for pattern discovery
 - **Bash access** for read-only exploration (git log, tree, find, etc.)
