@@ -4,7 +4,7 @@ description: >-
   Receives feature requests from Jules, investigates the codebase, and produces
   complete plans. Returns only metadata summaries to the parent agent.
 mode: subagent
-model: github-copilot/claude-opus-4.6
+model: github-copilot/gpt-5.3-codex
 temperature: 0.2
 top_p: 0.6
 thinking: { type: "enabled", budgetTokens: 3000 }
