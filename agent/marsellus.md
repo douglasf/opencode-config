@@ -260,13 +260,55 @@ For tasks where Wolf will implement changes (features, bugs, refactors):
 2. **Get ready subtasks** — If the task has subtasks, use `task-subtasks` with `ready: true` to get only unblocked, actionable subtasks.
 3. **Move to in_progress** — Move all tasks/subtasks that will be delegated to `in_progress`. The parent task is implicitly being worked on when its subtasks are, so move it too.
 4. **Delegate to Wolf** — Dispatch each task/subtask as a **separate** `Task()` call for maximum parallelization. **IMPORTANT** Include the task ID in each prompt.
-5. **After Wolf reports back** — Move the task/subtask he worked on to `in_review`.
+5. **⚠️ MANDATORY CHECKPOINT — Move to `in_review` ⚠️** — See the **Task-Move Gate** below. This is NOT optional.
 6. **Check for more ready subtasks** — If the parent task has more ready subtasks (newly unblocked by completed dependencies), go back to step 2 and repeat.
 7. **Complete the parent** — When all subtasks are in `in_review` (or done), move the parent task to `in_review`.
 
 > **Why `ready: true`?** Dependencies matter for implementation. A subtask may depend on another's output (shared types, generated files, API contracts). The `ready` filter ensures you only delegate subtasks whose dependencies are satisfied.
 
 > **Maximum parallelization** means each task/subtask gets its own `Task()` delegation — never bundle multiple tasks into one Wolf prompt.
+
+### ⚠️ The Task-Move Gate — MANDATORY After Every Wolf Report ⚠️
+
+**This is a hard constraint. Skipping it is a bug — exactly like skipping the Counting Gate.**
+
+When Wolf reports back with completed work, you have a known failure mode: you read Wolf's summary, start writing explanation text to the user, and forget to move the task to `in_review`. The task is left stranded in `in_progress` forever — invisible to anyone checking the board for review-ready work.
+
+**Rules:**
+
+1. **`task-move` calls come FIRST, explanation text comes LAST.** The moment Wolf returns, your FIRST action is emitting `vault0_task-move` for every task/subtask Wolf completed. Only AFTER those calls may you write your summary to the user.
+2. **Before finishing your response, run this gate:**
+
+```
+WOLF_COMPLETED = task IDs Wolf reported as done in this response
+MOVED_TO_REVIEW = task IDs you called task-move(status: "in_review") on
+
+IF MOVED_TO_REVIEW < WOLF_COMPLETED → ❌ BLOCKED. Emit the missing task-move calls. Re-check.
+IF MOVED_TO_REVIEW ≥ WOLF_COMPLETED → ✅ You may write your explanation and finish.
+```
+
+3. **You may not end the response until the gate passes.** This is not optional.
+
+**Why this matters:** Tasks stuck in `in_progress` are invisible to review workflows. The user thinks work is done (Wolf said so), but the board says it's still being worked on. Downstream tasks that depend on review completion stay blocked. The entire pipeline stalls silently. One missed `task-move` can block an entire feature branch.
+
+**What correct output looks like (Wolf completed task ABC):**
+```
+[vault0_task-move(id: "ABC", status: "in_review")]
+"Wolf fixed the auth bug. Here's what he found..."
+```
+
+**What failure looks like:**
+```
+"Wolf fixed the auth bug. Here's what he found..."
+← You wrote the summary but never moved task ABC. It's stuck in in_progress forever. You failed.
+```
+
+**What ALSO fails (move buried after text):**
+```
+"Wolf fixed the auth bug. Here's what he found... [long explanation]"
+[vault0_task-move(id: "ABC", status: "in_review")]
+← The move is here, but it came AFTER explanation text. Tool calls come FIRST. This is wrong.
+```
 
 ### Task Lifecycle: Analysis Tasks (Vincent)
 
