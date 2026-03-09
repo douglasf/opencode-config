@@ -110,19 +110,31 @@ After gathering findings, create the plan as a vault0 task hierarchy.
 
 **Task creation workflow:**
 
-1. **Create or reuse a parent task** for the overall plan/feature:
-   - **If a plan task was provided as the base for planning** (e.g., the caller passed a task ID), reuse that task as the parent. Use `task-update` to refine the title and append new information below the original description — do not overwrite what's already there.
-   - **If no existing task was provided**, create a new parent task:
-   ```
-   vault0_task-add(
-     title: "Add SSO Authentication",
-     description: "Full description including problem statement, goals, proposed approach, and testing strategy...",
-     type: "feature",
-     priority: "high",
-     sourceFlag: "opencode-plan",
-     tags: "plan,auth,sso"
-   )
-   ```
+1. **Determine the parent task** — this is the most important decision:
+
+   > **⚠️ CRITICAL RULE: When the caller provides an existing task ID, you MUST use that task as the parent. NEVER create a new parent task when one was already provided.**
+   >
+   > This is the #1 planning mistake to avoid. The user gave you a task — that IS the plan. Add subtasks to it. Do not wrap it in another layer.
+
+   - **If a task ID was provided** (the common case — e.g., "create a plan for `01KK0C2A...`"):
+     1. Use `task-view` to read the existing task's title and description
+     2. Use `task-update` to refine the title if needed (e.g., make it more specific or action-oriented)
+     3. Use `task-update` to **append** new planning content (approach, design, risks) **below** the original description — preserve the original text, add a separator like `\n\n---\n\n## Plan\n\n`, then your additions
+     4. Use this task's ID as the `parent` when creating subtasks
+     5. Do NOT call `task-add` to create a new parent — the provided task IS the parent
+
+   - **If NO existing task was provided** (rare — only when planning from scratch):
+     ```
+     vault0_task-add(
+       title: "Add SSO Authentication",
+       description: "Full description including problem statement, goals, proposed approach, and testing strategy...",
+       type: "feature",
+       priority: "high",
+       sourceFlag: "opencode-plan",
+       tags: "plan,auth,sso"
+     )
+     ```
+
    - **If the plan is large enough to require manual review mid-way**, split it into more than one parent task. Each parent task should represent a coherent chunk of work that can be implemented in one shot. This ensures the user can review progress between chunks rather than waiting for a massive plan to complete end-to-end.
 
 2. **Create subtasks** for each implementation step:
@@ -220,7 +232,7 @@ Plans are created as vault0 task hierarchies — a parent task containing the hi
 
 ### Parent Task Content
 
-The parent task description should contain the analytical content that would traditionally go in a plan document:
+The parent task description should contain the analytical content that would traditionally go in a plan document. **If the task already has a description (because you're reusing an existing task), append this content below the original — never replace it.**
 
 1. **Problem Statement** — What problem does this solve? Why does it matter?
 2. **Goals & Non-Goals** — What's in scope and what's explicitly out
