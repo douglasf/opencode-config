@@ -29,6 +29,15 @@
     "build": {
       "disable": true
     },
+    "plan": {
+      "disable": true
+    },
+    "marsellus": {
+      "color": "#279FF5"
+    },
+    "jules": {
+      "color": "#FFD700"
+    },
     "vincent": {
       "model": "github-copilot/gpt-5.4",
       "temperature": 0.2,
