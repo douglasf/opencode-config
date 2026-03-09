@@ -132,6 +132,8 @@ permission:
     "gcloud trace *": allow
     "gcloud traces *": allow
     "gcloud projects describe*": allow
+    "gcloud compute networks vpc-access connectors list": allow
+    "gcloud functions list": allow
 
     # ── Package introspection (read-only) ──
     "npm ls": allow
