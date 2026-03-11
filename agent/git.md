@@ -88,14 +88,14 @@ After a successful commit, check which tasks in `in_review` status are related t
 1. **List tasks in review** — Use `vault0_task-list(status: "in_review")` to see all tasks awaiting completion.
 2. **Compare with the commit** — Review the committed changes (files modified, commit message) and determine which tasks are actually addressed by this commit.
 3. **Mark related tasks as done** — For each task that is clearly resolved by the commit:
-   - First, use `vault0_task-view` to check if the task already has a solution field (Wolf typically writes solution notes during implementation).
-   - If the task **already has a solution**: use `vault0_task-complete` and **append** the commit reference to the existing solution — do NOT overwrite what Wolf wrote. Example: `solution: "<existing solution text>\n\nCommitted in <hash>: <commit message summary>"`
+   - First, use `vault0_task-view` to check if the task already has a solution field (Jim typically writes solution notes during implementation).
+   - If the task **already has a solution**: use `vault0_task-complete` and **append** the commit reference to the existing solution — do NOT overwrite what Jim wrote. Example: `solution: "<existing solution text>\n\nCommitted in <hash>: <commit message summary>"`
    - If the task **has no solution**: use `vault0_task-complete` with `solution: "Committed in <hash>: <commit message summary>"`
 
 ### Rules
 
 - **Only use `task-complete`** — you operate at the end state (done).
-- **Do NOT overwrite existing solution notes** — Wolf writes detailed solution notes during implementation. Your job is to append the commit reference, not replace Wolf's work.
+- **Do NOT overwrite existing solution notes** — Jim writes detailed solution notes during implementation. Your job is to append the commit reference, not replace Jim's work.
 - **Only mark tasks done after successful commits** — if the commit fails, do not touch any tasks.
 - **Do not move tasks to done that have nothing to do with what was committed** — only tasks whose work is clearly included in the commit.
 - **Do not move tasks to done if uncertain** — if you're not sure whether a task is addressed by the commit, leave it in `in_review` for the user to resolve.

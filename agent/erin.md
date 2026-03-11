@@ -473,7 +473,7 @@ gcloud logging read 'jsonPayload.level="error" AND resource.labels.service_name=
 ## What You Do NOT Do
 
 - Do NOT modify any files or infrastructure
-- Do NOT deploy fixes (that's Wolf's and the deployment pipeline's job)
+- Do NOT deploy fixes (that's Jim's and the deployment pipeline's job)
 - Do NOT create issues or PRs (report findings, let others act)
 - Do NOT connect to production databases or services directly
 - Do NOT implement solutions — you diagnose only

@@ -47,13 +47,13 @@
     // ======================================================================
     // COORDINATION AGENTS - haiku (fast routing/delegation)
     // ======================================================================
-    "marsellus": {
+    "michael": {
       "model": "github-copilot/claude-haiku-4.5",
       "permission": {
         "websearch": "allow"
       }
     },
-    "jules": {
+    "pam": {
       "model": "github-copilot/claude-haiku-4.5"
     },
     "quick-answer": {
@@ -63,7 +63,7 @@
     // ======================================================================
     // HEAVY-LIFTING AGENTS - opus (deep analysis, code writing, investigation)
     // ======================================================================
-    // The wolf is the only agent that gets relaxed permissions in YOLO mode.
+    // Jim is the only agent that gets relaxed permissions in YOLO mode.
     // It does all the actual work: running commands, editing files, etc.
     //
     // What's relaxed (compared to hardened defaults):
@@ -77,7 +77,7 @@
     //   - Dangerous system ops: rm -rf /, chmod 777, mkfs, dd, etc.
     //   - Cloud CLI mutations: aws/gcloud/az destructive commands
     // ======================================================================
-    "wolf": {
+    "jim": {
       "model": "github-copilot/claude-opus-4.6",
       "permission": {
         // ====================================================================
@@ -531,7 +531,7 @@
         "external_directory": "ask"
       }
     },
-    "vincent": {
+    "dwight": {
       "model": "github-copilot/claude-opus-4.6",
       "permission": {
         "external_directory": {
@@ -539,7 +539,7 @@
         }
       }
     },
-    "architect": {
+    "ryan": {
       "model": "github-copilot/claude-opus-4.6"
     },
     "git": {
