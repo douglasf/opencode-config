@@ -28,6 +28,7 @@ permission:
     "jim": allow
     "dwight": allow
     "erin": allow
+    "ralph": allow
     "git": deny
   vault0_task-view: allow
   vault0_task-list: allow
