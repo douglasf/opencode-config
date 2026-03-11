@@ -4,16 +4,16 @@ Personal OpenCode setup with custom agents, commands, and plugins. Lives at `~/.
 
 ## Good Usage
 
-This config uses a **multi-agent architecture**. When you type in OpenCode, you're talking to the **orchestrator** (Marsellus) — it never does work itself. Instead, it delegates to specialized agents: **Wolf** for implementation (reads, writes, searches, runs commands), **Vincent** for deep analysis (read-only codebase investigation), and **git** for version control (commits, pushes, PRs — only via slash commands). The orchestrator routes your request to the right agent, waits for results, and synthesizes a response.
+This config uses a **multi-agent architecture**. When you type in OpenCode, you're talking to the **orchestrator** (Michael) — it never does work itself. Instead, it delegates to specialized agents: **Jim** for implementation (reads, writes, searches, runs commands), **Dwight** for deep analysis (read-only codebase investigation), and **git** for version control (commits, pushes, PRs — only via slash commands). The orchestrator routes your request to the right agent, waits for results, and synthesizes a response.
 
-You can also switch to the **Jules** agent (via tab) when you want to think through a feature or design before building. Jules interviews you about what you want to build, delegates investigation and planning to the **Architect** (who uses **Vincent** for deep analysis), and presents concise metadata summaries. You iterate with Jules on scope and decisions — then hand off to Wolf for implementation when ready.
+You can also switch to the **Pam** agent (via tab) when you want to think through a feature or design before building. Pam interviews you about what you want to build, delegates investigation and planning to the **Ryan** (who uses **Dwight** for deep analysis), and presents concise metadata summaries. You iterate with Pam on scope and decisions — then hand off to Jim for implementation when ready.
 
 ### Day-to-Day Workflow
 
-- **Ask a question or request a change** — just type naturally. The orchestrator will route to the right agent. Implementation requests go to Wolf, who investigates and executes autonomously. Analysis-only requests go to Vincent.
+- **Ask a question or request a change** — just type naturally. The orchestrator will route to the right agent. Implementation requests go to Jim, who investigates and executes autonomously. Analysis-only requests go to Dwight.
 - **Quick lookups** — use `/quick how do I do X` for fast, direct answers without the full investigation cycle. Great for syntax reminders, port numbers, or quick factual questions.
-- **Planning** — switch to the **Jules** tab when you need to think through something bigger: a new feature, architectural change, or multi-step refactor. Describe what you want and Jules will guide you through a structured planning process, producing a plan document you can implement later.
-- **Code changes** — describe what you want changed and where. Wolf will read the relevant files, make edits, and run tests if appropriate. Review the changes before committing.
+- **Planning** — switch to the **Pam** tab when you need to think through something bigger: a new feature, architectural change, or multi-step refactor. Describe what you want and Pam will guide you through a structured planning process, producing a plan document you can implement later.
+- **Code changes** — describe what you want changed and where. Jim will read the relevant files, make edits, and run tests if appropriate. Review the changes before committing.
 - **Committing** — the orchestrator will *never* commit on its own. When you're happy with the changes, use `/commit` to stage and commit with an auto-generated message. Use `/push` and `/pr` for the rest of the git workflow.
 - **Code review** — use `/review` to get a review of your staged/unstaged changes before committing.
 
@@ -23,8 +23,8 @@ By default, **strict mode** is active everywhere — the AI cannot run arbitrary
 
 ### Things to Know
 
-- Wolf reports back what it did but does not commit. You always control when changes are committed.
-- If you're in strict mode and Wolf says it can't run a command, that's the guardrails working. Either switch to YODO mode or run the command yourself.
+- Jim reports back what it did but does not commit. You always control when changes are committed.
+- If you're in strict mode and Jim says it can't run a command, that's the guardrails working. Either switch to YODO mode or run the command yourself.
 - Slash commands (`/commit`, `/push`, `/pr`, `/review`, `/quick`) are the primary way to trigger specific workflows. Type `/` to see what's available.
 
 ## Structure
@@ -35,7 +35,7 @@ By default, **strict mode** is active everywhere — the AI cannot run arbitrary
   opencode-yodo.jsonc     # Relaxed config (YODO mode — opt-in per repo)
   package.json            # Sole dependency: @opencode-ai/plugin
   bun.lock                # Bun lockfile
-  agent/                  # Agent definitions (marsellus, wolf, vincent, jules, architect, git, quick-answer)
+  agent/                  # Agent definitions (michael, jim, dwight, pam, ryan, git, quick-answer)
   command/                # Slash commands (/commit, /push, /pr, /review, /quick)
   plugins/                # Custom plugins (copilot-usage)
   tools/                  # Custom tools (progress reporting)
@@ -51,11 +51,11 @@ By default, **strict mode** is active everywhere — the AI cannot run arbitrary
 │                         User Input                              │
 └──────────┬────────────────────────┬─────────────────────────────┘
            │                        │
-     (default tab)            (Jules tab)
+     (default tab)            (Pam tab)
            │                        │
            ▼                        ▼
     ┌─────────────┐          ┌─────────────┐
-    │  Marsellus  │          │    Jules    │
+    │  Michael  │          │    Pam    │
     │ orchestrator│          │  planning   │
     │             │          │  coordinator│
     └──┬───────┬──┘          └──┬───────┬──┘
@@ -64,13 +64,13 @@ By default, **strict mode** is active everywhere — the AI cannot run arbitrary
        │       │                │       │  implementation)
        ▼       ▼                ▼       ▼
     ┌──────┐ ┌──────────┐  ┌──────────┐ ┌──────┐
-    │ Wolf │ │ Vincent  │  │Architect │ │ Wolf │
+    │ Jim │ │ Dwight  │  │Ryan │ │ Jim │
     │      │ │          │  │          │ │      │
     └──┬───┘ └──────────┘  └────┬─────┘ └───┬──┘
        │      (terminal)        │           │
        │                        ▼           │
        │                   ┌─────────┐      │
-       ├──────────────────▶│ Vincent │◀─────┘
+       ├──────────────────▶│ Dwight │◀─────┘
         │  (deep analysis)  └─────────┘
         │                    (terminal)
         ▼
@@ -81,21 +81,21 @@ By default, **strict mode** is active everywhere — the AI cannot run arbitrary
 ```
 
 **Routing rules:**
-- **Marsellus** routes based on intent: "do something" → Wolf, "know something" → Vincent. Default bias is Wolf.
-- **Wolf** can self-delegate to Vincent mid-task when deep investigation is needed.
-- **Jules** delegates to Architect for investigation + planning, or to Wolf for implementation handoff.
-- **Architect** delegates to Vincent for deep codebase research.
-- **Vincent**, **git**, and **quick-answer** are terminal — they do not delegate further.
+- **Michael** routes based on intent: "do something" → Jim, "know something" → Dwight. Default bias is Jim.
+- **Jim** can self-delegate to Dwight mid-task when deep investigation is needed.
+- **Pam** delegates to Ryan for investigation + planning, or to Jim for implementation handoff.
+- **Ryan** delegates to Dwight for deep codebase research.
+- **Dwight**, **git**, and **quick-answer** are terminal — they do not delegate further.
 
 ### Agent Roles
 
 | Agent | Role | Model | Mode | Can Delegate To |
 |---|---|---|---|---|
-| **Marsellus** | Orchestrator — receives user requests, routes to the right agent. Never reads code, edits files, or runs commands (except read-only git for context). | Claude Haiku 4.5 | Primary | Wolf, Vincent |
-| **Wolf** | Executor — reads, writes, edits, searches, and runs commands. Does all implementation work. Owns the full cycle from investigation to delivery. | Claude Opus 4.6 | Subagent | Vincent |
-| **Vincent** | Investigator — deep read-only codebase analysis. Traces dependencies, maps architecture, returns structured findings with file paths and line numbers. Never modifies anything. | Claude Opus 4.6 | Subagent | *None* |
-| **Architect** | Planner — combines investigation (directly + via Vincent) with structured planning. Creates vault0 task hierarchies. Returns only metadata summaries to caller. | Claude Opus 4.6 | Subagent | Vincent |
-| **Jules** | Planning coordinator — interviews users about what to build, delegates investigation and planning to the Architect. Only sees plan metadata, never source code. | Claude Haiku 4.5 | Primary | Architect, Wolf |
+| **Michael** | Orchestrator — receives user requests, routes to the right agent. Never reads code, edits files, or runs commands (except read-only git for context). | Claude Haiku 4.5 | Primary | Jim, Dwight |
+| **Jim** | Executor — reads, writes, edits, searches, and runs commands. Does all implementation work. Owns the full cycle from investigation to delivery. | Claude Opus 4.6 | Subagent | Dwight |
+| **Dwight** | Investigator — deep read-only codebase analysis. Traces dependencies, maps architecture, returns structured findings with file paths and line numbers. Never modifies anything. | Claude Opus 4.6 | Subagent | *None* |
+| **Ryan** | Planner — combines investigation (directly + via Dwight) with structured planning. Creates vault0 task hierarchies. Returns only metadata summaries to caller. | Claude Opus 4.6 | Subagent | Dwight |
+| **Pam** | Planning coordinator — interviews users about what to build, delegates investigation and planning to the Ryan. Only sees plan metadata, never source code. | Claude Haiku 4.5 | Primary | Ryan, Jim |
 | **git** | Git specialist — commits, pushes, creates PRs. Only invoked via `/commit`, `/push`, `/pr` slash commands. Has full git write permissions but no file edit access. | Claude Opus 4.6 | Subagent | *None* |
 | **quick-answer** | Fast responder — concise answers to simple questions. Only has `webfetch` for lookups. No file access, no investigation. | Claude Haiku 4.5 | Subagent | *None* |
 
@@ -105,21 +105,21 @@ Each agent has a strict permission boundary enforced by the tool and bash permis
 
 | Agent | File Read | File Write/Edit | Bash | Git (read) | Git (write) | Task Delegation | Web Access |
 |---|---|---|---|---|---|---|---|
-| **Marsellus** | Limited (prompt context only) | No | No | Yes (status, log) | No | Wolf, Vincent | No |
-| **Wolf** | Full | Full | Extensive allow-list (read-only + builds/tests) | Yes | No | Vincent | Yes |
-| **Vincent** | Full | No | Read-only exploration only | Yes | No | No | Yes |
-| **Architect** | Full | vault0 tasks only | Minimal (ls, cat, git read) | Yes | No | Vincent | Yes |
-| **Jules** | vault0 tasks only | No | Git context only | Yes | No | Architect, Wolf | No |
+| **Michael** | Limited (prompt context only) | No | No | Yes (status, log) | No | Jim, Dwight | No |
+| **Jim** | Full | Full | Extensive allow-list (read-only + builds/tests) | Yes | No | Dwight | Yes |
+| **Dwight** | Full | No | Read-only exploration only | Yes | No | No | Yes |
+| **Ryan** | Full | vault0 tasks only | Minimal (ls, cat, git read) | Yes | No | Dwight | Yes |
+| **Pam** | vault0 tasks only | No | Git context only | Yes | No | Ryan, Jim | No |
 | **git** | Full | No | Git + GitHub CLI (full write) | Yes | Yes | No | No |
 | **quick-answer** | No | No | No | No | No | No | Yes |
 
 **Key constraints:**
-- **Git write operations are forbidden** for all agents except git. Wolf, Vincent, Architect, and Jules cannot run `git add`, `git commit`, `git push`, etc.
-- **The orchestrator never does work.** Marsellus has no grep, glob, write, or edit tools. It only delegates via `Task()`.
-- **Vincent is strictly read-only.** No file writes, no builds, no package installs, no code execution. Not even `make` or `npm run`.
-- **Wolf has broad bash access** in strict mode, but it's an explicit allow-list — default-deny with whitelisted commands for builds, tests, linting, and read-only tools. Dangerous operations (cloud mutations, remote access, package publishing, system commands) are denied.
-- **Architect can only create vault0 tasks** — it cannot modify source code.
-- **Jules cannot read source code** — its access is restricted to vault0 task metadata only.
+- **Git write operations are forbidden** for all agents except git. Jim, Dwight, Ryan, and Pam cannot run `git add`, `git commit`, `git push`, etc.
+- **The orchestrator never does work.** Michael has no grep, glob, write, or edit tools. It only delegates via `Task()`.
+- **Dwight is strictly read-only.** No file writes, no builds, no package installs, no code execution. Not even `make` or `npm run`.
+- **Jim has broad bash access** in strict mode, but it's an explicit allow-list — default-deny with whitelisted commands for builds, tests, linting, and read-only tools. Dangerous operations (cloud mutations, remote access, package publishing, system commands) are denied.
+- **Ryan can only create vault0 tasks** — it cannot modify source code.
+- **Pam cannot read source code** — its access is restricted to vault0 task metadata only.
 
 ## Slash Commands
 
@@ -136,8 +136,8 @@ This configuration supports two security modes for OpenCode:
 | | **Strict** (default) | **YODO** (opt-in) |
 |---|---|---|
 | **Activation** | Automatic everywhere | Symlink `opencode-yodo.jsonc` into repo's `.opencode/opencode.jsonc` |
-| **Bash for Wolf** | Default-deny, explicit allow-list (builds, tests, read-only tools) | Default-ask, broad allow-list |
-| **File editing** | Allowed (Wolf has full write/edit) | Allowed |
+| **Bash for Jim** | Default-deny, explicit allow-list (builds, tests, read-only tools) | Default-ask, broad allow-list |
+| **File editing** | Allowed (Jim has full write/edit) | Allowed |
 | **Git mutations** | Denied (git agent only, via slash commands) | Allowed (except force-push/hard-reset) |
 | **Docker** | Build + compose only | Full local access |
 | **Cloud CLIs** | Denied | Read-only allowed, mutations ask/deny |
