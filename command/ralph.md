@@ -1,6 +1,6 @@
 ---
 description: Start autonomous work loop on a task
-agent: michael
+agent: orchestrate
 ---
 
 Start working autonomously on a vault0 task until completion.

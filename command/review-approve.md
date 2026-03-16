@@ -1,6 +1,6 @@
 ---
 description: "[DEPRECATED] This command has been removed — task approval is now automatic on commit or via natural language"
-agent: michael
+agent: orchestrate
 ---
 
 This command has been removed. Task approval now happens through two mechanisms:

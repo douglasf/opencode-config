@@ -1,9 +1,9 @@
 ---
-description: Review changes in a GitHub PR by delegating to Dwight
-agent: michael
+description: Review changes in a GitHub PR by delegating to the investigate agent
+agent: orchestrate
 ---
 
-Review the changes in a GitHub Pull Request by delegating the full analysis to Dwight, the deep codebase investigator.
+Review the changes in a GitHub Pull Request by delegating the full analysis to the investigate agent (deep codebase investigator).
 
 ## Arguments
 
@@ -11,17 +11,17 @@ Review the changes in a GitHub Pull Request by delegating the full analysis to D
 
 ## Process
 
-1. **Delegate the entire review to Dwight** using a single `Task()` call. Dwight has read-only bash access to `gh pr view` and `gh pr diff`, so he can fetch all PR data and perform the analysis himself.
+1. **Delegate the entire review to the investigate agent** using a single `Task()` call. The investigate agent has read-only bash access to `gh pr view` and `gh pr diff`, so it can fetch all PR data and perform the analysis itself.
 
    ```
    Task(
-     subagent_type: "dwight",
+     subagent_type: "investigate",
      description: "Review PR #$1",
      prompt: <see template below>
    )
    ```
 
-2. **Task prompt template** — pass this to Dwight (substitute $1 for the PR number):
+2. **Task prompt template** — pass this to the investigate agent (substitute $1 for the PR number):
 
    ````
    Review GitHub Pull Request #$1. Follow these steps:
@@ -75,12 +75,12 @@ Review the changes in a GitHub Pull Request by delegating the full analysis to D
       you found in step 1. Note at the end if you skipped items for this reason.
    ````
 
-3. **Present Dwight's review** to the user exactly as returned. Do not summarize or truncate — the structured format IS the final output.
+3. **Present the investigate agent's review** to the user exactly as returned. Do not summarize or truncate — the structured format IS the final output.
 
 ## Important
 
 - Do NOT use `git diff` against the local working directory
-- Always use `gh pr diff $1` (via Dwight) to ensure you're reviewing exactly what's in the PR
+- Always use `gh pr diff $1` (via the investigate agent) to ensure you're reviewing exactly what's in the PR
 - Skip feedback that duplicates existing PR comments/reviews
 - This command does NOT require the branch to be checked out locally
-- Dwight has read-only `gh` access — he can fetch all PR data without any local checkout
+- The investigate agent has read-only `gh` access — it can fetch all PR data without any local checkout
