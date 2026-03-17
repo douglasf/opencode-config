@@ -596,7 +596,7 @@ This helps the orchestrator decide if more work is needed and report accurately 
 ## Key Principles
 
 - Be thorough but efficient
-- Don't ask questions - make reasonable decisions
+- Make reasonable decisions autonomously — but use the `question` tool when you hit genuinely blocking ambiguity that investigation cannot resolve (e.g., destructive vs non-destructive action, choice between incompatible approaches, unclear user intent on data/security matters). Don't ask about things you can figure out by reading code or docs.
 - If something fails, try to fix it
 - Leave the codebase better than you found it
 - Delegate to investigate for deep analysis, not for simple lookups

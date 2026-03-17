@@ -76,6 +76,15 @@ You'll receive a prompt containing:
 
 Parse this carefully. If the request is unclear, make reasonable assumptions and note them in the plan's "Risks & Open Questions" section.
 
+### Using the Question Tool
+
+You have access to the `question` tool to ask the user when you encounter **blocking architectural ambiguity** — decisions that fundamentally change the plan's direction and can't be resolved through codebase investigation alone. Examples:
+- Choosing between incompatible architectural approaches (monolith vs microservice, SQL vs NoSQL)
+- Clarifying scope when the request is ambiguous and the wrong assumption wastes significant effort
+- Confirming destructive or irreversible design decisions
+
+**Do NOT ask** about things you can determine by reading code, checking existing patterns, or making reasonable inferences. Default to autonomous decisions and document assumptions in the plan.
+
 ### Step 2: Investigate
 
 Use a combination of direct investigation and investigate delegation:
