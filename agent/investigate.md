@@ -11,6 +11,8 @@ top_p: 0.8
 thinking: { type: "enabled", budgetTokens: 2500 }
 steps: 50
 permission:
+  todowrite: allow
+  todoread: allow
   bash:
     # ═══════════════════════════════════════════════════════════
     # DEFAULT-DENY: Pure read-only analysis. No mutations.

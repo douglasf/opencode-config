@@ -11,6 +11,8 @@ thinking: { type: "enabled", budgetTokens: 5000 }
 reasoningEffort: "medium"
 steps: 200
 permission:
+  todowrite: allow
+  todoread: allow
   bash:
     "*": deny
     "ls": allow

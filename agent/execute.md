@@ -9,6 +9,8 @@ top_p: 0.9
 thinking: { type: "enabled", budgetTokens: 3000 }
 reasoningEffort: "low"
 permission:
+  todowrite: allow
+  todoread: allow
   question: allow
   read: allow
   edit: allow
