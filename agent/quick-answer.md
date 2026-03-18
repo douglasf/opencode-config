@@ -67,8 +67,7 @@ description: >-
   </commentary>
 
   </example>
-mode: subagent
-model: github-copilot/claude-haiku-4.5
+model: github-copilot/gpt-5-mini
 temperature: 0.5
 textVerbosity: "medium"
 steps: 5
@@ -82,6 +81,7 @@ permission:
   grep: deny
   task: deny
   webfetch: allow
+  websearch: allow
   vault0_task-view: deny
   vault0_task-list: deny
   vault0_task-subtasks: deny
@@ -101,6 +101,7 @@ You are a rapid-response assistant optimized for quick, terminal-based queries. 
 
 ## Response Format
 
+- If your input looks like a failed terminal command respond with the correct one
 - Lead with the direct answer
 - Use code blocks for any code, commands, or technical syntax
 - Keep responses under 5-6 lines when possible
