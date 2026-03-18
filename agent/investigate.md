@@ -157,6 +157,13 @@ permission:
     "dig *": allow
     "nslookup *": allow
 
+    # ── CLI help discovery (safe, read-only) ──
+    "* --help": allow
+    "* --help *": allow
+    "* -h": allow
+    "* help": allow
+    "* help *": allow
+
     # ═══════════════════════════════════════════════════════════
     # EXPLICIT DENY — defense-in-depth
     # ═══════════════════════════════════════════════════════════

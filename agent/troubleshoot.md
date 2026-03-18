@@ -183,6 +183,22 @@ permission:
     "printenv": allow
     "printenv *": allow
 
+    # ── CLI help discovery (safe, read-only) ──
+    "* --help": allow
+    "* --help *": allow
+    "* -h": allow
+    "* help": allow
+    "* help *": allow
+
+    # ── Google Cloud SCC: read-only ──
+    "gcloud scc * list*": allow
+    "gcloud scc * describe*": allow
+    "gcloud scc * group*": allow
+    "gcloud scc * get-*": allow
+    "gcloud scc * list-marks*": allow
+    "gcloud scc * list-descendant*": allow
+    "gcloud scc * list-effective*": allow
+
     # ═══════════════════════════════════════════════════════════
     # EXPLICIT DENY — defense-in-depth for production safety
     # ═══════════════════════════════════════════════════════════
