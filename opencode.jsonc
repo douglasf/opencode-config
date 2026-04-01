@@ -44,6 +44,9 @@
       "model": "github-copilot/gpt-5.4",
       "temperature": 0.2,
       "top_p": 0.9
+    },
+    "quick-answer": {
+      "hidden": true
     }
   }
 }
