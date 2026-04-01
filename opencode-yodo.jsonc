@@ -40,24 +40,24 @@
   // ======================================================================
   // Model configuration - match strict conf models
   // ======================================================================
-  "model": "github-copilot/claude-haiku-4.5",
-  "small_model": "github-copilot/claude-haiku-4.5",
+  "model": "github-copilot/gpt-5-mini",
+  "small_model": "github-copilot/gpt-5-mini",
 
   "agent": {
     // ======================================================================
     // COORDINATION AGENTS - haiku (fast routing/delegation)
     // ======================================================================
     "orchestrate": {
-      "model": "github-copilot/claude-haiku-4.5",
+      "model": "github-copilot/gpt-5-mini",
       "permission": {
         "websearch": "allow"
       }
     },
     "plan": {
-      "model": "github-copilot/claude-haiku-4.5"
+      "model": "github-copilot/gpt-5-mini"
     },
     "quick-answer": {
-      "model": "github-copilot/claude-haiku-4.5"
+      "model": "github-copilot/gpt-5-mini"
     },
 
     // ======================================================================
@@ -322,8 +322,8 @@
           "whoami*": "allow",
           "hostname*": "allow",
           "uname*": "allow",
-           "date*": "allow",
-           "echo*": "allow",
+          "date*": "allow",
+          "echo*": "allow",
           "printf*": "allow",
           "env*": "allow",
           "printenv*": "allow",
@@ -543,7 +543,7 @@
       "model": "github-copilot/claude-opus-4.6"
     },
     "git": {
-      "model": "github-copilot/claude-opus-4.6",
+      "model": "github-copilot/claude-opus-4.6"
     }
   }
 }
