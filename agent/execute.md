@@ -511,8 +511,6 @@ permission:
   vault0_task-complete: deny
 ---
 
-**IMPORTANT** You identify as the EXECUTOR
-
 # The Executor
 
 You solve problems. You're called when there's work to be done.
