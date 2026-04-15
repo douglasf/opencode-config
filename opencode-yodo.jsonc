@@ -1,25 +1,37 @@
 {
   // ============================================================================
-  // YOLO MODE - Relaxed Security Profile
+  // YODO MODE - "You Only Dev Once" Personal Project Profile
   // ============================================================================
   //
-  // This is the "personal repo" configuration. It relaxes overly cautious
-  // restrictions while keeping protection against genuinely dangerous operations.
+  // Philosophy: MAXIMUM developer velocity for personal projects.
+  // If it won't destroy your system, nuke your data, or publish secrets,
+  // it should just run. No friction.
   //
-  // What's relaxed (compared to hardened defaults):
-  //   - Docker: run, exec, build allowed without prompting
-  //   - Package managers: npm install, pip install allowed freely
-  //   - Network tools: curl, wget allowed for data fetching
-  //   - Common dev commands run without friction
+  // ✅ ALLOWED freely:
+  //   - ALL build/run/test commands for any language/framework
+  //   - ALL package managers (install, add, remove, publish — it's YOUR project)
+  //   - Docker everything (including rm/rmi — containers are ephemeral)
+  //   - Git mutations (add, commit, push, merge, rebase, clean)
+  //   - File operations (rm, chmod, chown — you own these files)
+  //   - Network tools (curl, wget, httpie)
+  //   - Process management (kill stale dev servers)
+  //   - Kubernetes local dev (apply, delete, exec)
+  //   - GitHub CLI (gh) for PRs, issues, etc.
+  //   - Homebrew and system package managers
   //
-  // What's still protected:
-  //   - Git safety: force-push, hard reset, rebase still denied/ask
-  //   - Dangerous system ops: rm -rf /, chmod 777, mkfs, dd, etc.
-  //   - Cloud CLI mutations: aws/gcloud/az destructive commands
-  //   - Secrets: .env files, credentials, keys
+  // ❌ DENIED (truly destructive / irreversible):
+  //   - git push --force (rewrite shared history)
+  //   - rm -rf / or ~ (nuke filesystem)
+  //   - dd, mkfs, fdisk (destroy disks)
+  //   - sudo, su (privilege escalation)
+  //   - terraform apply/destroy (infra mutations)
+  //   - shutdown, reboot, halt
   //
-  // Usage: Copy this file to opencode.jsonc or merge the permission block
-  //        into your existing config.
+  // 🤔 ASK (might be intentional but worth confirming):
+  //   - Cloud CLI mutations (aws, gcloud, az)
+  //   - Writing to system paths (/etc, /usr, /var)
+  //
+  // Usage: Symlink or copy to your project's opencode.jsonc
   // ============================================================================
 
   "$schema": "https://opencode.ai/config.json",
@@ -63,19 +75,8 @@
     // ======================================================================
     // HEAVY-LIFTING AGENTS - opus (deep analysis, code writing, investigation)
     // ======================================================================
-    // The execute agent is the only agent that gets relaxed permissions in YOLO mode.
-    // It does all the actual work: running commands, editing files, etc.
-    //
-    // What's relaxed (compared to hardened defaults):
-    //   - Docker: run, exec, build allowed without prompting
-    //   - Package managers: npm install, pip install allowed freely
-    //   - Network tools: curl, wget allowed for data fetching
-    //   - Common dev commands run without friction
-    //
-    // What's still protected:
-    //   - Git safety: force-push, hard reset still denied
-    //   - Dangerous system ops: rm -rf /, chmod 777, mkfs, dd, etc.
-    //   - Cloud CLI mutations: aws/gcloud/az destructive commands
+    // YODO mode: maximum velocity, minimum friction.
+    // If it can't destroy your system, it runs without asking.
     // ======================================================================
     "execute": {
       "model": "github-copilot/claude-opus-4.6",
@@ -97,162 +98,68 @@
           "*": "ask",
 
           // ------------------------------------------------------------------
-          // Git: read-only operations are fine, mutations need care
+          // Git: everything allowed EXCEPT force-push (history rewriting)
+          // Personal project = you own the repo, merge/rebase freely
           // ------------------------------------------------------------------
-          "git status*": "allow",
-          "git log*": "allow",
-          "git diff*": "allow",
-          "git show*": "allow",
-          "git branch*": "allow",
-          "git tag*": "allow",
-          "git remote -v*": "allow",
-          "git stash list*": "allow",
-          "git blame*": "allow",
-          "git shortlog*": "allow",
-          "git rev-parse*": "allow",
-          "git ls-files*": "allow",
-          "git ls-tree*": "allow",
-          "git cat-file*": "allow",
-          "git config --get*": "allow",
-          "git config --list*": "allow",
-
-          // Git write ops that are safe enough for YOLO
-          "git add*": "allow",
-          "git commit*": "allow",
-          "git checkout*": "allow",
-          "git switch*": "allow",
-          "git merge*": "ask",
-          "git rebase*": "ask",
-          "git stash*": "allow",
-          "git pull*": "allow",
-          "git fetch*": "allow",
-          "git push": "allow",
-          "git push origin*": "allow",
-
-          // Git operations that remain dangerous
+          "git*": "allow",
+          // Force-push rewrites shared history — still dangerous
           "git push --force*": "deny",
           "git push -f*": "deny",
           "git push *--force*": "deny",
-          "git reset --hard*": "deny",
-          "git clean -fd*": "ask",
 
           // ------------------------------------------------------------------
-          // Docker: allowed in YOLO mode (relaxed from default)
+          // GitHub CLI: fully allowed (PRs, issues, releases, etc.)
           // ------------------------------------------------------------------
-          "docker build*": "allow",
-          "docker run*": "allow",
-          "docker exec*": "allow",
-          "docker compose*": "allow",
+          "gh*": "allow",
+
+          // ------------------------------------------------------------------
+          // Docker: everything allowed (containers are ephemeral)
+          // ------------------------------------------------------------------
+          "docker*": "allow",
           "docker-compose*": "allow",
-          "docker ps*": "allow",
-          "docker images*": "allow",
-          "docker logs*": "allow",
-          "docker inspect*": "allow",
-          "docker stop*": "allow",
-          "docker start*": "allow",
-          "docker restart*": "allow",
-          "docker pull*": "allow",
-          "docker network*": "allow",
-          "docker volume*": "allow",
-          "docker cp*": "allow",
-          "docker stats*": "allow",
-          "docker top*": "allow",
-          // Still ask before destructive docker operations
-          "docker rm*": "ask",
-          "docker rmi*": "ask",
+          // system prune can free lots of space — confirm first
           "docker system prune*": "ask",
 
           // ------------------------------------------------------------------
-          // Package managers: freely allowed (relaxed from default)
+          // Package managers: broad wildcards — it's your project
+          // Includes install, remove, publish, everything
           // ------------------------------------------------------------------
-          "npm install*": "allow",
-          "npm ci*": "allow",
-          "npm run*": "allow",
-          "npm test*": "allow",
-          "npm start*": "allow",
-          "npm exec*": "allow",
+          "npm*": "allow",
           "npx*": "allow",
-          "npm list*": "allow",
-          "npm outdated*": "allow",
-          "npm audit*": "allow",
-          "npm pack*": "allow",
-          "npm init*": "allow",
-          "npm version*": "allow",
-          // npm publish still requires confirmation
-          "npm publish*": "ask",
-
           "yarn*": "allow",
           "pnpm*": "allow",
-          "bun install*": "allow",
-          "bun run*": "allow",
-          "bun test*": "allow",
           "bun*": "allow",
-
-          "pip install*": "allow",
-          "pip list*": "allow",
-          "pip show*": "allow",
-          "pip freeze*": "allow",
-          "pip check*": "allow",
-          "pip3 install*": "allow",
-          "pip3 list*": "allow",
-          "python -m pip*": "allow",
-          "python3 -m pip*": "allow",
+          "pip*": "allow",
+          "pip3*": "allow",
           "pipx*": "allow",
-          "uv pip*": "allow",
-          "uv sync*": "allow",
-          "uv run*": "allow",
           "uv*": "allow",
-          "poetry install*": "allow",
-          "poetry add*": "allow",
-          "poetry run*": "allow",
           "poetry*": "allow",
           "pdm*": "allow",
-
-          "cargo build*": "allow",
-          "cargo run*": "allow",
-          "cargo test*": "allow",
-          "cargo check*": "allow",
-          "cargo clippy*": "allow",
-          "cargo fmt*": "allow",
-          "cargo add*": "allow",
-          "cargo install*": "allow",
           "cargo*": "allow",
-
-          "go build*": "allow",
-          "go run*": "allow",
-          "go test*": "allow",
-          "go mod*": "allow",
-          "go get*": "allow",
-          "go install*": "allow",
-          "go vet*": "allow",
-          "go fmt*": "allow",
           "go*": "allow",
-
-          "gem install*": "allow",
-          "bundle install*": "allow",
-          "bundle exec*": "allow",
-
-          "composer install*": "allow",
-          "composer require*": "allow",
-
-          "swift build*": "allow",
-          "swift run*": "allow",
-          "swift test*": "allow",
-
+          "gem*": "allow",
+          "bundle*": "allow",
+          "composer*": "allow",
+          "swift*": "allow",
           "gradle*": "allow",
           "./gradlew*": "allow",
           "mvn*": "allow",
           "./mvnw*": "allow",
+          "brew*": "allow",
+          "mas*": "allow",
 
           // ------------------------------------------------------------------
-          // Network tools: allowed for data fetching (relaxed from default)
+          // Network tools
           // ------------------------------------------------------------------
           "curl*": "allow",
           "wget*": "allow",
           "http*": "allow",
+          "ssh*": "allow",
+          "scp*": "allow",
+          "rsync*": "allow",
 
           // ------------------------------------------------------------------
-          // Build & dev tools: always allowed
+          // Build & dev tools / language runtimes
           // ------------------------------------------------------------------
           "make*": "allow",
           "cmake*": "allow",
@@ -276,6 +183,10 @@
           "elixir*": "allow",
           "mix*": "allow",
           "erl*": "allow",
+          "zig*": "allow",
+          "lua*": "allow",
+          "R*": "allow",
+          "Rscript*": "allow",
 
           // ------------------------------------------------------------------
           // Testing & quality tools
@@ -296,9 +207,10 @@
           "pylint*": "allow",
           "rubocop*": "allow",
           "shellcheck*": "allow",
+          "hadolint*": "allow",
 
           // ------------------------------------------------------------------
-          // Common utilities: safe to run
+          // Common utilities
           // ------------------------------------------------------------------
           "cat*": "allow",
           "head*": "allow",
@@ -333,6 +245,7 @@
           "df*": "allow",
           "free*": "allow",
           "top*": "allow",
+          "htop*": "allow",
           "ps*": "allow",
           "lsof*": "allow",
           "netstat*": "allow",
@@ -371,78 +284,45 @@
           "false*": "allow",
           "nproc*": "allow",
           "sysctl*": "allow",
+          "open*": "allow",
+          "pbcopy*": "allow",
+          "pbpaste*": "allow",
+          "watch*": "allow",
+          "time*": "allow",
+          "timeout*": "allow",
+          "chmod*": "allow",
+          "chown*": "allow",
 
-          // File removal: ask for safety, deny recursive root
-          "rm*": "ask",
+          // ------------------------------------------------------------------
+          // File removal: allowed freely, EXCEPT nuking root/home
+          // ------------------------------------------------------------------
+          "rm*": "allow",
           "rm -rf /*": "deny",
           "rm -rf ~*": "deny",
           "rm -fr /*": "deny",
           "rm -fr ~*": "deny",
+          "rm -rf $HOME*": "deny",
+          "rm -fr $HOME*": "deny",
 
           // ------------------------------------------------------------------
-          // Ephemeral/temp directory cleanup: allow rm in temp paths only
-          // macOS system temp directories (cleared on reboot)
+          // Process management: allowed (killing stale dev servers is routine)
           // ------------------------------------------------------------------
-          "rm /tmp/*": "allow",
-          "rm -r /tmp/*": "allow",
-          "rm -f /tmp/*": "allow",
-          "rm -rf /tmp/*": "allow",
-          "rm -fr /tmp/*": "allow",
-          "rm /var/tmp/*": "allow",
-          "rm -r /var/tmp/*": "allow",
-          "rm -f /var/tmp/*": "allow",
-          "rm -rf /var/tmp/*": "allow",
-          "rm -fr /var/tmp/*": "allow",
-          // macOS per-user temp ($TMPDIR typically resolves here)
-          "rm /var/folders/*": "allow",
-          "rm -r /var/folders/*": "allow",
-          "rm -f /var/folders/*": "allow",
-          "rm -rf /var/folders/*": "allow",
-          "rm -fr /var/folders/*": "allow",
-          // Private temp (macOS symlinks /tmp → /private/tmp)
-          "rm /private/tmp/*": "allow",
-          "rm -r /private/tmp/*": "allow",
-          "rm -f /private/tmp/*": "allow",
-          "rm -rf /private/tmp/*": "allow",
-          "rm -fr /private/tmp/*": "allow",
-          "rm /private/var/tmp/*": "allow",
-          "rm -r /private/var/tmp/*": "allow",
-          "rm -f /private/var/tmp/*": "allow",
-          "rm -rf /private/var/tmp/*": "allow",
-          "rm -fr /private/var/tmp/*": "allow",
-          "rm /private/var/folders/*": "allow",
-          "rm -r /private/var/folders/*": "allow",
-          "rm -f /private/var/folders/*": "allow",
-          "rm -rf /private/var/folders/*": "allow",
-          "rm -fr /private/var/folders/*": "allow",
+          "kill*": "allow",
+          "killall*": "allow",
+          "pkill*": "allow",
 
           // ------------------------------------------------------------------
-          // Kubernetes: read operations allowed, mutations need confirmation
+          // Kubernetes: fully allowed for local dev
           // ------------------------------------------------------------------
-          "kubectl get*": "allow",
-          "kubectl describe*": "allow",
-          "kubectl logs*": "allow",
-          "kubectl top*": "allow",
-          "kubectl config*": "allow",
-          "kubectl cluster-info*": "allow",
-          "kubectl version*": "allow",
-          "kubectl api-resources*": "allow",
-          "kubectl explain*": "allow",
-          "kubectl auth*": "allow",
-          "kubectl apply*": "ask",
-          "kubectl delete*": "ask",
-          "kubectl exec*": "ask",
-          "kubectl port-forward*": "allow",
-          "helm list*": "allow",
-          "helm status*": "allow",
-          "helm get*": "allow",
-          "helm template*": "allow",
-          "helm install*": "ask",
-          "helm upgrade*": "ask",
-          "helm uninstall*": "ask",
+          "kubectl*": "allow",
+          "helm*": "allow",
+          "k9s*": "allow",
+          "minikube*": "allow",
+          "kind*": "allow",
+          "skaffold*": "allow",
 
           // ------------------------------------------------------------------
-          // Cloud CLIs: read-only allowed, mutations DENIED
+          // Cloud CLIs: read-only allowed, mutations ask
           // ------------------------------------------------------------------
           "aws s3 ls*": "allow",
           "aws s3 cp*": "ask",
@@ -471,7 +351,6 @@
           // ------------------------------------------------------------------
           "chmod 777*": "deny",
           "chmod -R 777*": "deny",
-          "chown*": "ask",
           "mkfs*": "deny",
           "fdisk*": "deny",
           "dd*": "deny",
@@ -485,9 +364,6 @@
           "systemctl*": "ask",
           "service*": "ask",
           "launchctl*": "ask",
-          "kill*": "ask",
-          "killall*": "ask",
-          "pkill*": "ask",
           "sudo*": "deny",
           "su *": "deny",
           "passwd*": "deny",
@@ -528,7 +404,11 @@
         "question": "allow",
         "lsp": "allow",
         "skill": "allow",
-        "external_directory": "ask"
+        "external_directory": {
+          "~/**": "allow",
+          "/tmp/**": "allow",
+          "*": "ask"
+        }
       }
     },
     "investigate": {
