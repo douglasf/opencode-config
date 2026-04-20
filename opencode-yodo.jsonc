@@ -57,7 +57,7 @@
 
   "agent": {
     // ======================================================================
-    // COORDINATION AGENTS - haiku (fast routing/delegation)
+    // COORDINATION AGENTS - gpt-5.4-mini (fast routing/delegation)
     // ======================================================================
     "orchestrate": {
       "model": "github-copilot/gpt-5-mini",
@@ -79,7 +79,7 @@
     // If it can't destroy your system, it runs without asking.
     // ======================================================================
     "execute": {
-      "model": "github-copilot/claude-opus-4.6",
+      "model": "github-copilot/claude-opus-4.7",
       "permission": {
         // ====================================================================
         // File operations - allow freely within the project
@@ -412,7 +412,7 @@
       }
     },
     "investigate": {
-      "model": "github-copilot/claude-opus-4.6",
+      "model": "github-copilot/claude-opus-4.7",
       "permission": {
         "external_directory": {
           "~/**": "allow"
@@ -420,10 +420,10 @@
       }
     },
     "architect": {
-      "model": "github-copilot/claude-opus-4.6"
+      "model": "github-copilot/claude-opus-4.7"
     },
     "git": {
-      "model": "github-copilot/claude-opus-4.6"
+      "model": "github-copilot/claude-opus-4.7"
     }
   }
 }

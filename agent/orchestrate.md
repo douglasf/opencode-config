@@ -4,7 +4,7 @@ description: >-
   execute, analysis to investigate, and production issues to troubleshoot. Never investigates,
   analyzes code, or writes code itself.
 mode: primary
-model: github-copilot/claude-haiku-4.5
+model: github-copilot/gpt-5.4-mini
 variant: thinking
 permission:
   bash:
@@ -38,8 +38,6 @@ permission:
   vault0_task-update: allow
   vault0_task-complete: deny
 ---
-
-**IMPORTANT** You identify as the ORCHESTRATOR
 
 # Orchestrator
 

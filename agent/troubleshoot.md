@@ -5,10 +5,9 @@ description: >-
   destructive operations. Use this agent when you have an error link, Sentry issue ID,
   log entry, or any production incident that needs root-cause analysis.
 mode: subagent
-model: github-copilot/claude-opus-4.6
+model: github-copilot/claude-opus-4.7
 temperature: 0.2
 top_p: 0.9
-thinking: { type: "enabled", budgetTokens: 4000 }
 steps: 50
 permission:
   todowrite: allow

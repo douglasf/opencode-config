@@ -8,7 +8,6 @@ mode: subagent
 model: github-copilot/gpt-5.4
 temperature: 0.2
 top_p: 0.8
-thinking: { type: "enabled", budgetTokens: 2500 }
 steps: 50
 permission:
   todowrite: allow

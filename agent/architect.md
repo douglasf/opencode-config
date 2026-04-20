@@ -7,7 +7,6 @@ mode: subagent
 model: github-copilot/gpt-5.4
 temperature: 0.2
 top_p: 0.6
-thinking: { type: "enabled", budgetTokens: 3000 }
 steps: 75
 permission:
   bash:
@@ -49,8 +48,6 @@ permission:
   vault0_task-update: allow
   vault0_task-complete: deny
 ---
-
-**IMPORTANT** You identify as the PLANNER
 
 # The Architect
 

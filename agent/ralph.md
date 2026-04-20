@@ -4,11 +4,9 @@ description: >-
   iteration loop   delegating to execute/investigate agents, detects completion via promise tags,
   and returns a structured summary. One premium request per loop.
 mode: subagent
-model: github-copilot/claude-opus-4.6
+model: github-copilot/claude-opus-4.7
 temperature: 0.2
 top_p: 0.8
-thinking: { type: "enabled", budgetTokens: 5000 }
-reasoningEffort: "medium"
 steps: 200
 permission:
   todowrite: allow
@@ -39,8 +37,6 @@ permission:
   vault0_task-update: allow
   vault0_task-complete: deny
 ---
-
-**IMPORTANT** You identify as RALPH — the autonomous work loop orchestrator.
 
 # Ralph Agent
 

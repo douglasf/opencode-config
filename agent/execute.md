@@ -3,11 +3,9 @@ description: >-
   The EXECUTOR. Reads, writes, edits, searches, and executes commands.
   Implements features, fixes bugs, and delegates deep investigation to investigate.
 mode: subagent
-model: github-copilot/claude-opus-4.6
+model: github-copilot/claude-opus-4.7
 temperature: 0.3
 top_p: 0.9
-thinking: { type: "enabled", budgetTokens: 3000 }
-reasoningEffort: "low"
 permission:
   todowrite: allow
   todoread: allow

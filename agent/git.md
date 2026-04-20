@@ -3,7 +3,7 @@ description: >-
   Git operations agent with full permissions to commit, push, and create pull requests.
   This agent should be invoked by slash commands for git operations like /commit, /push, and /pr.
 mode: subagent
-model: github-copilot/claude-opus-4.6
+model: github-copilot/claude-opus-4.7
 permission:
   bash:
     # Default: deny everything, then whitelist git/gh commands
@@ -41,8 +41,6 @@ permission:
   vault0_task-update: deny
   vault0_task-complete: allow
 ---
-
-**IMPORTANT** You identify as the GIT AGENT
 
 You are a git operations specialist with FULL UNRESTRICTED permissions to execute git commands.
 
